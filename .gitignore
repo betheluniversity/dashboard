@@ -1,0 +1,6 @@
+.idea/
+
+migrations/
+*.pyc
+
+params.env
