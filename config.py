@@ -9,6 +9,7 @@ class Config(object):
     DB_KEY = envs.get('DB_KEY')
     CONSTR = envs.get('TEST_CONSTR')
     SQLALCHEMY_DATABASE_URI = CONSTR % DB_KEY
+    SECRET_KEY = "superdupersecret"
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = envs.get('SQLALCHEMY_DATABASE_URI')
