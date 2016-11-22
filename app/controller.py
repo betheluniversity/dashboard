@@ -9,6 +9,8 @@ from bu_cascade.asset_tools import *
 import requests
 
 
+from app.models import *
+
 from app import app
 
 
@@ -18,11 +20,9 @@ class DashboardController(object):
         pass
 
     def before_request(self):
-        print "BEFORE REQUEST"
+        def init_user_session():
 
-        def init_user():
-
-            dev = current_app.config['DEBUG'] != True
+            dev = current_app.config['DEBUG'] == True
 
             # if not production, then clear our session variables on each call
             if dev:
@@ -39,9 +39,6 @@ class DashboardController(object):
             if 'roles' not in session.keys():
                 get_roles()
 
-            if 'top_nav' not in session.keys():
-                get_nav()
-
             if 'user_email' not in session.keys() and session['username']:
                 # todo, get prefered email (alias) from wsapi once its added.
                 session['user_email'] = session['username'] + "@bethel.edu"
@@ -51,9 +48,9 @@ class DashboardController(object):
 
         def get_user():
             if current_app.config['DEBUG'] == True:
-                username = request.environ.get('REMOTE_USER')
+                username = current_app.config['TEST_USERNAME']
             else:
-                username = current_app.config['TEST_USER']
+                username = request.environ.get('REMOTE_USER')
 
             session['username'] = username
 
@@ -107,14 +104,55 @@ class DashboardController(object):
 
             return ret
 
-        def get_nav():
-            html = render_template('nav.html', **locals())
-            session['top_nav'] = html
+        init_user_session()
+        print self.create_new_user()
 
-        if '/public/' not in request.path and '/api/' not in request.path:
-            init_user()
-            get_nav()
+    def create_new_user(self):
+        db_session = db.session
+
+        user = User.query.filter(User.username==session['username']).first()
+
+        if user is None:
+            # if user does not exist, then . . .
+
+            # create user
+            new_user = User(username=session['username'])
+            db_session.add(new_user)
+            new_user = User.query.filter(User.username==session['username']).first()
+
+            # create roles
+            new_user_role = UserRole(user_id=new_user.id, role_id=2)
+            db_session.add(new_user_role)
+
+            # create tab
+            new_tab = Tab(user_id=new_user.id, name='First Tab', order=1)
+            db_session.add(new_tab)
+            new_tab = Tab.query.filter(Tab.user_id==new_user.id).first()
+
+            # create row
+            new_row = Row(new_tab.id, 1)
+            db_session.add(new_row)
+            new_row = Row.query.filter(Row.id==new_tab.id).first()
+
+            # create col
+            new_column = Column(new_row.id, 1, 1, 'test-channel', '1')
+            db_session.add(new_column)
+
+            db_session.commit()
+            return True
+
         else:
-            session['username'] = 'tinker'
-            session['groups'] = []
-            session['roles'] = []
+            # user exists, so exit
+            return False
+
+    def get_database(self):
+        return_array = {}
+        return_array['users'] = User.query.all()
+        return_array['roles'] = Role.query.all()
+        return_array['user_roles'] = UserRole.query.all()
+        return_array['tabs'] = Tab.query.all()
+        return_array['rows'] = Row.query.all()
+        return_array['columns'] = Column.query.all()
+        return_array['channels'] = Channel.query.all()
+
+        return return_array

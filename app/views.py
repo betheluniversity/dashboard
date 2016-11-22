@@ -1,11 +1,14 @@
 from flask.ext.classy import FlaskView, route
 from flask import render_template
+from flask import session
+from app.controller import DashboardController
 
 from app import app
 
 class DashboardView(FlaskView):
 
     def __init__(self):
+        self.base = DashboardController()
         pass
 
     def before_request(self, name, *args, **kwargs):
@@ -17,6 +20,10 @@ class DashboardView(FlaskView):
 
     def index(self):
         uri = app.config['SQLALCHEMY_DATABASE_URI']
+        username = session['username']
+
+        database = self.base.get_database()
+
         return render_template('base.html', **locals())
 
     @route('/testing/<num>')

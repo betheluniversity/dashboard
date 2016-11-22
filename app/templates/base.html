@@ -9,7 +9,42 @@
 <body>
 
 
-test base.html {{ uri }}
+{% macro printColumn(array, key) %}
+    {% if array[key] %}
+        <td>{{ array[key] }}</td>
+    {% endif %}
+{% endmacro %}
+
+{% macro printColumnHeader(array, key) %}
+    {% if array[key] %}
+        <td>{{ key }}</td>
+    {% endif %}
+{% endmacro %}
+
+{% macro printDatabase(database) %}
+    {% for table in database %}
+        <h3>{{ table }}</h3>
+        <table>
+            {% set keys = ['id', 'username', 'name', 'user_id', 'role_id', 'order', 'tab_id', 'column_num', 'channel_table', 'channel_id', 'tablename', 'size'] %}
+            <thead><tr>
+                {% for key in keys %}
+                    {{ printColumnHeader(database[table][0], key) }}
+                {% endfor %}
+            </tr></thead>
+            {% for values in database[table] %}
+                <tr>
+                    {% for key in keys %}
+                        {{ printColumn(values, key) }}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+{% endmacro %}
+
+<h3>{{ username }}</h3>
+{{ printDatabase(database) }}
+
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js"
             integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous">
