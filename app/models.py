@@ -71,7 +71,7 @@ class Column(db.Model):
     column_num = db.Column(db.Integer, nullable=False)
     order = db.Column(db.Integer, nullable=False)
     channel_table = db.Column(db.String(40), nullable=False)
-    channel_id = db.Column(db.Integer, nullable=False)
+    channel_id = db.Column(db.Integer, db.ForeignKey('dashboard_channel.id'), nullable=False)
 
     def __init__(self, row_id, column_num, order, channel_table, channel_id):
         self.row_id = row_id

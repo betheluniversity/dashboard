@@ -24,6 +24,8 @@ class DashboardView(FlaskView):
 
         database = self.base.get_database()
 
+        self.base.db_controller.get_joined_tabs()
+        tab = self.base.render_tab(1)
         return render_template('base.html', **locals())
 
     @route('/testing/<num>')

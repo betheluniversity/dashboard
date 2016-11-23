@@ -12,3 +12,4 @@ flask-migrate
 
 requests
 bu-cascade
+importlib

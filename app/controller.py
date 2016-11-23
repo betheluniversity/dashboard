@@ -10,6 +10,7 @@ import requests
 
 
 from app.models import *
+from app.db_controller import DBController
 
 from app import app
 
@@ -17,7 +18,7 @@ from app import app
 class DashboardController(object):
 
     def __init__(self):
-        pass
+        self.db_controller = DBController()
 
     def before_request(self):
         def init_user_session():
@@ -156,3 +157,12 @@ class DashboardController(object):
         return_array['channels'] = Channel.query.all()
 
         return return_array
+
+    def render_tab(self, tab_order):
+        # search DB for tab_order
+
+        # gather all of the tab's rows/columns/channels
+        # call render channel on each channel
+
+        # pass the info back
+        return 'TEST'
