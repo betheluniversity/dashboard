@@ -32,7 +32,6 @@ class UserRole(db.Model):
         self.user_id = user_id
         self.role_id = role_id
 
-
 class Tab(db.Model):
     __tablename__ = 'dashboard_tab'
 
@@ -48,7 +47,6 @@ class Tab(db.Model):
             raise ValueError('order must be greater than or equal to 0')
         self.order = order
 
-
 class Row(db.Model):
     __tablename__ = 'dashboard_row'
 
@@ -61,7 +59,6 @@ class Row(db.Model):
         if order < 0:
             raise ValueError('order must be greater than or equal to 0')
         self.order = order
-
 
 class Column(db.Model):
     __tablename__ = 'dashboard_column'
@@ -85,7 +82,6 @@ class Column(db.Model):
         # todo could put a check in the init to make sure this table exists, and the ID exists within that table
         self.channel_id = channel_id
 
-
 class Channel(db.Model):
     __tablename__ = 'dashboard_channel'
 
@@ -98,7 +94,6 @@ class Channel(db.Model):
         self.name = name
         self.tablename = tablename
         self.size = size
-
 
 class Log(db.Model):
     __tablename__ = 'dashboard_log'

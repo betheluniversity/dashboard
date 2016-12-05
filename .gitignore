@@ -4,3 +4,4 @@ migrations/
 *.pyc
 
 params.env
+config.py

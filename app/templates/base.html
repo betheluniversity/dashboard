@@ -108,9 +108,21 @@
 
 
         <div class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 main">
-          <h1>Dashboard</h1>
+            <h1>Dashboard</h1>
             <p>This is where the channels go.</p>
-
+            {% for row in tab %}
+                <div class="row">
+                    {% for column in tab[row] %}
+                        <div class="col-md-6">
+                            {% for channel in tab[row][column] %}
+                                <div class="card" style="padding:1em; background-color:lightblue">
+                                    {{ tab[row][column][channel].name }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
         </div>
       </div>
     </div>

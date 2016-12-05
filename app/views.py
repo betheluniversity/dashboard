@@ -22,10 +22,7 @@ class DashboardView(FlaskView):
         uri = app.config['SQLALCHEMY_DATABASE_URI']
         username = session['username']
 
-        database = self.base.get_database()
-
-        self.base.db_controller.get_joined_tabs()
-        tab = self.base.render_tab(1)
+        tab = self.base.render_tab(1) # currently this is just using 1 as the id. later, this should use tab_order
         return render_template('base.html', **locals())
 
     @route('/testing/<num>')

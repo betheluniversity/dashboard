@@ -1,5 +1,5 @@
 from flask import session
-from flask import current_app
+# from flask import current_app
 from flask import request
 from flask import render_template
 from flask import json as fjson
@@ -23,7 +23,7 @@ class DashboardController(object):
     def before_request(self):
         def init_user_session():
 
-            dev = current_app.config['DEBUG'] == True
+            dev = app.config['DEBUG'] == True
 
             # if not production, then clear our session variables on each call
             if dev:
@@ -48,8 +48,8 @@ class DashboardController(object):
                 get_users_name()
 
         def get_user():
-            if current_app.config['DEBUG'] == True:
-                username = current_app.config['TEST_USERNAME']
+            if app.config['DEBUG'] == True:
+                username = app.config['TEST_USERNAME']
             else:
                 username = request.environ.get('REMOTE_USER')
 
@@ -58,7 +58,7 @@ class DashboardController(object):
         def get_users_name(username=None):
             if not username:
                 username = session['username']
-            url = current_app.config['API_URL'] + "/username/%s/names" % username
+            url = app.config['API_URL'] + "/username/%s/names" % username
             r = requests.get(url)
             try:
                 # In some cases, '0' will not be a valid key, throwing a KeyError
@@ -94,8 +94,8 @@ class DashboardController(object):
         def get_roles(username=None):
             if not username:
                 username = session['username']
-            url = current_app.config['API_URL'] + "/username/%s/roles" % username
-            r = requests.get(url, auth=(current_app.config['API_USERNAME'], current_app.config['API_PASSWORD']))
+            url = app.config['API_URL'] + "/username/%s/roles" % username
+            r = requests.get(url, auth=(app.config['API_USERNAME'], app.config['API_PASSWORD']))
             roles = fjson.loads(r.content)
             ret = []
             for key in roles.keys():
@@ -113,8 +113,8 @@ class DashboardController(object):
 
         user = User.query.filter(User.username==session['username']).first()
 
+        # if user does not exist, then . . .
         if user is None:
-            # if user does not exist, then . . .
 
             # create user
             new_user = User(username=session['username'])
@@ -131,12 +131,36 @@ class DashboardController(object):
             new_tab = Tab.query.filter(Tab.user_id==new_user.id).first()
 
             # create row
-            new_row = Row(new_tab.id, 1)
+            new_row = Row(new_tab.id, 0)
             db_session.add(new_row)
             new_row = Row.query.filter(Row.id==new_tab.id).first()
 
-            # create col
-            new_column = Column(new_row.id, 1, 1, 'test-channel', '1')
+            # create cols
+            new_column = Column(new_row.id, 0, 0, 'test-channel00', '1')
+            db_session.add(new_column)
+
+            new_column = Column(new_row.id, 0, 2, 'test-channel02', '1')
+            db_session.add(new_column)
+
+            new_column = Column(new_row.id, 0, 1, 'test-channel01', '1')
+            db_session.add(new_column)
+
+            new_column = Column(new_row.id, 1, 0, 'test-channel10', '1')
+            db_session.add(new_column)
+
+            new_column = Column(new_row.id, 1, 1, 'test-channel01', '1')
+            db_session.add(new_column)
+
+            # create row
+            new_row = Row(new_tab.id, 1)
+            db_session.add(new_row)
+            new_row = Row.query.filter(Row.id == new_tab.id).first()
+
+            # create cols
+            new_column = Column(new_row.id, 0, 0, 'test-channel00', '1')
+            db_session.add(new_column)
+
+            new_column = Column(new_row.id, 1, 0, 'test-channel10', '1')
             db_session.add(new_column)
 
             db_session.commit()
@@ -146,23 +170,26 @@ class DashboardController(object):
             # user exists, so exit
             return False
 
-    def get_database(self):
+    def render_tab(self, tab_order):
+        joined_tabs = self.db_controller.get_joined_tabs()
+
         return_array = {}
-        return_array['users'] = User.query.all()
-        return_array['roles'] = Role.query.all()
-        return_array['user_roles'] = UserRole.query.all()
-        return_array['tabs'] = Tab.query.all()
-        return_array['rows'] = Row.query.all()
-        return_array['columns'] = Column.query.all()
-        return_array['channels'] = Channel.query.all()
+        for channel in joined_tabs:
+            # if it is the right tab, add the channel
+            # Todo: maybe move this to be a part of the sql?
+            if channel.Tab.order == tab_order:
+                # gather info
+                row_order = channel.Row.order
+                column_number = channel.Column.column_num
+                column_order = channel.Column.order
+                channel = channel.Channel
+
+                # create the array structure as needed
+                if row_order not in return_array:
+                    return_array[row_order] = {}
+                if column_number not in return_array[row_order]:
+                    return_array[row_order][column_number] = {}
+
+                return_array[row_order][column_number][column_order] = channel
 
         return return_array
-
-    def render_tab(self, tab_order):
-        # search DB for tab_order
-
-        # gather all of the tab's rows/columns/channels
-        # call render channel on each channel
-
-        # pass the info back
-        return 'TEST'
