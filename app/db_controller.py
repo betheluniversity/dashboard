@@ -25,3 +25,11 @@ class DBController(object):
 
         return joined_tables
 
+    def clear_db_generated_content(self):
+        User.query().delete()
+        UserRole.query().delete()
+        Tab.query().delete()
+        Row.query().delete()
+        Column.query().delete()
+
+        return True

@@ -170,14 +170,14 @@ class DashboardController(object):
             # user exists, so exit
             return False
 
-    def render_tab(self, tab_order):
+    def render_tab(self, tab_order_or_tab_name):
         joined_tabs = self.db_controller.get_joined_tabs()
 
         return_array = {}
         for channel in joined_tabs:
             # if it is the right tab, add the channel
-            # Todo: maybe move this to be a part of the sql?
-            if channel.Tab.order == tab_order:
+            # check tab_order or tab_name
+            if (isinstance(tab_order_or_tab_name, int) and channel.Tab.order == tab_order_or_tab_name) or (isinstance(tab_order_or_tab_name, str) and channel.Tab.name == tab_order_or_tab_name):
                 # gather info
                 row_order = channel.Row.order
                 column_number = channel.Column.column_num

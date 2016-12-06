@@ -5,3 +5,4 @@ migrations/
 
 params.env
 config.py
+app/test.db

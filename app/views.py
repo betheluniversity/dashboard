@@ -19,12 +19,12 @@ class DashboardView(FlaskView):
         """
 
     def index(self):
-        uri = app.config['SQLALCHEMY_DATABASE_URI']
-        username = session['username']
-
         tab = self.base.render_tab(1) # currently this is just using 1 as the id. later, this should use tab_order
-        return render_template('base.html', **locals())
+        title = 'Home'
+        return render_template('tab_render.html', **locals())
 
-    @route('/testing/<num>')
-    def test(self, num):
-        return "test %s" % num
+    @route('/tab/<tab_name>')
+    def test(self, tab_name):
+        tab = self.base.render_tab(1)  # currently this is just using 1 as the id. later, this should use tab_order
+        title = 'Home'
+        return render_template('tab_render.html', **locals())
