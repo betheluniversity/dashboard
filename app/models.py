@@ -67,7 +67,7 @@ class Column(db.Model):
     row_id = db.Column(db.Integer, db.ForeignKey('dashboard_row.id'))
     column_num = db.Column(db.Integer, nullable=False)
     order = db.Column(db.Integer, nullable=False)
-    channel_table = db.Column(db.String(40), nullable=False)
+    # channel_table = db.Column(db.String(40), nullable=False)
     channel_id = db.Column(db.Integer, db.ForeignKey('dashboard_channel.id'), nullable=False)
 
     def __init__(self, row_id, column_num, order, channel_table, channel_id):
@@ -78,7 +78,7 @@ class Column(db.Model):
         if order < 0:
             raise ValueError('order must be greater than or equal to 0')
         self.order = order
-        self.channel_table = channel_table
+        # self.channel_table = channel_table
         # todo could put a check in the init to make sure this table exists, and the ID exists within that table
         self.channel_id = channel_id
 
@@ -87,12 +87,14 @@ class Channel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
-    tablename = db.Column(db.String(20), nullable=False)
+    channel_options_table = db.Column(db.String(40), nullable=False)
+    channel_class_name = db.Column(db.String(40), nullable=False)
     size = db.Column(db.Integer, nullable=False) # todo between 1 and 12 or has to be 6 or 12?
 
-    def __init__(self, name, tablename, size):
+    def __init__(self, name, channel_options_table, channel_class_name, size):
         self.name = name
-        self.tablename = tablename
+        self.channel_options_table = channel_options_table
+        self.channel_class_name = channel_class_name
         self.size = size
 
 class Log(db.Model):
