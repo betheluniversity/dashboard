@@ -106,69 +106,7 @@ class DashboardController(object):
             return ret
 
         init_user_session()
-        print self.create_new_user()
-
-    def create_new_user(self):
-        db_session = db.session
-
-        user = User.query.filter(User.username==session['username']).first()
-
-        # if user does not exist, then . . .
-        if user is None:
-
-            # create user
-            new_user = User(username=session['username'])
-            db_session.add(new_user)
-            new_user = User.query.filter(User.username==session['username']).first()
-
-            # create roles
-            new_user_role = UserRole(user_id=new_user.id, role_id=2)
-            db_session.add(new_user_role)
-
-            # create tab
-            new_tab = Tab(user_id=new_user.id, name='First Tab', order=1)
-            db_session.add(new_tab)
-            new_tab = Tab.query.filter(Tab.user_id==new_user.id).first()
-
-            # create row
-            new_row = Row(new_tab.id, 0)
-            db_session.add(new_row)
-            new_row = Row.query.filter(Row.id==new_tab.id).first()
-
-            # create cols
-            new_column = Column(new_row.id, 0, 0, 'test-channel00', '1')
-            db_session.add(new_column)
-
-            new_column = Column(new_row.id, 0, 2, 'test-channel02', '1')
-            db_session.add(new_column)
-
-            new_column = Column(new_row.id, 0, 1, 'test-channel01', '1')
-            db_session.add(new_column)
-
-            new_column = Column(new_row.id, 1, 0, 'test-channel10', '1')
-            db_session.add(new_column)
-
-            new_column = Column(new_row.id, 1, 1, 'test-channel01', '1')
-            db_session.add(new_column)
-
-            # create row
-            new_row = Row(new_tab.id, 1)
-            db_session.add(new_row)
-            new_row = Row.query.filter(Row.id == new_tab.id).first()
-
-            # create cols
-            new_column = Column(new_row.id, 0, 0, 'test-channel00', '1')
-            db_session.add(new_column)
-
-            new_column = Column(new_row.id, 1, 0, 'test-channel10', '1')
-            db_session.add(new_column)
-
-            db_session.commit()
-            return True
-
-        else:
-            # user exists, so exit
-            return False
+        print self.db_controller.create_new_user()
 
     def render_tab(self, tab_order_or_tab_name):
         joined_tabs = self.db_controller.get_joined_tabs()
