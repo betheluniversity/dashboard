@@ -1,31 +1,14 @@
 import importlib
+import re
 from app.channels.channel_base import *
 
 
-def get_section(section):
 
-    section_type = section.find('channel-type').text
+def render_channel(class_name):
+    module_name = '_'.join(re.findall('[A-Z][^A-Z]*', class_name)).lower()
+    module = importlib.import_module('app.channels.' + module_name + '.' + module_name)
 
-    if section_type == 'Text':
-        from app.channels.cascade_content_channel.cascade_content import TextSection
-        channel = TextSection(section)
-        return channel
-
-    elif section_type == 'RSS':
-        from app.channels.rss_channel.rss_channel import RSSChannel
-        channel = RSSChannel(section)
-        return channel
-
-    elif section_type == 'Python Class':
-        clspath = section.find('python-class/python-class').text
-        module_name, class_name = clspath.rsplit(".", 1)
-
-        module = importlib.import_module(module_name)
-
-        return getattr(module, class_name)()
-
-    else:
-        return NotFoundChannel(section_type)
+    return getattr(module, class_name)().render()
 
 
 class NotFoundChannel(ChannelBase):

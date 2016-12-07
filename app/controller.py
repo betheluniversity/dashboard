@@ -8,7 +8,6 @@ from bu_cascade.asset_tools import *
 
 import requests
 
-
 from app.models import *
 from app.db_controller import DBController
 
@@ -105,8 +104,10 @@ class DashboardController(object):
 
             return ret
 
+        self.db_controller.clear_db_generated_content()
+        self.db_controller.init_db()
         init_user_session()
-        print self.db_controller.create_new_user()
+        self.db_controller.create_new_user()
 
     def render_tab(self, tab_order_or_tab_name):
         joined_tabs = self.db_controller.get_joined_tabs()
@@ -131,3 +132,4 @@ class DashboardController(object):
                 return_array[row_order][column_number][column_order] = channel
 
         return return_array
+

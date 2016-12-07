@@ -1,6 +1,8 @@
 from flask.ext.classy import FlaskView, route
 from flask import render_template
 from flask import session
+
+from app.channels import render_channel
 from app.controller import DashboardController
 
 from app import app
@@ -28,3 +30,18 @@ class DashboardView(FlaskView):
         tab = self.base.render_tab(1)  # currently this is just using 1 as the id. later, this should use tab_order
         title = 'Home'
         return render_template('tab_render.html', **locals())
+
+    def clear_db(self):
+        self.base.db_controller.clear_db_generated_content()
+        return 'done'
+
+    # this should be cached at some point
+    @app.template_filter('render_channel')
+    def render_channel(self):
+        # in this case, self is the channel.
+        channel_class_name = self.channel_class_name
+        channel_options_table = self.channel_options_table
+
+        channel_output = render_channel(channel_class_name)
+
+        return channel_output

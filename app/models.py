@@ -87,8 +87,8 @@ class Channel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
-    channel_options_table = db.Column(db.String(40), nullable=False)
-    channel_class_name = db.Column(db.String(40), nullable=False)
+    channel_options_table = db.Column(db.String(40))
+    channel_class_name = db.Column(db.String(40))
     size = db.Column(db.Integer, nullable=False) # todo between 1 and 12 or has to be 6 or 12?
 
     def __init__(self, name, channel_options_table, channel_class_name, size):
