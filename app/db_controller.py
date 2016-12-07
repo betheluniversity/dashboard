@@ -7,11 +7,8 @@ class DBController(object):
     def __init__(self):
         self.db_session = db.session
 
-    def get_tabs_for_user(self, username):
-        pass
-
-    def get_joined_tabs(self):
-        joined_tables = self.db_session.query(User, Tab, Row, Column, Channel)\
+    def get_channels(self):
+        channels = self.db_session.query(User, Tab, Row, Column, Channel)\
             .join(Tab)\
             .join(Row)\
             .join(Column)\
@@ -23,7 +20,16 @@ class DBController(object):
             .order_by(Column.order)\
             .all()
 
-        return joined_tables
+        return channels
+
+    def get_tabs(self):
+        tabs = self.db_session.query(User, Tab)\
+            .join(Tab)\
+            .filter(User.username==session['username'])\
+            .order_by(Tab.order)\
+            .all()
+
+        return tabs
 
     def clear_db_generated_content(self):
         User.query.delete()
@@ -50,7 +56,7 @@ class DBController(object):
             self.db_session.add(new_user_role)
 
             # create tab
-            new_tab = Tab(user_id=new_user.id, name='First Tab', order=1)
+            new_tab = Tab(user_id=new_user.id, name='Home', order=1)
             self.db_session.add(new_tab)
             self.db_session.commit()
 
@@ -86,6 +92,46 @@ class DBController(object):
 
             new_column = Column(row2.id, 1, 0, 'test-channel10', '1')
             self.db_session.add(new_column)
+
+            # create tab
+            new_tab = Tab(user_id=new_user.id, name='Another Tab', order=2)
+            self.db_session.add(new_tab)
+            self.db_session.commit()
+
+            # create row
+            row1 = Row(new_tab.id, 1)
+            self.db_session.add(row1)
+            self.db_session.commit()
+
+            # create row1 cols
+            new_column = Column(row1.id, 0, 0, 'test-channel00', '1')
+            self.db_session.add(new_column)
+
+            new_column = Column(row1.id, 0, 2, 'test-channel02', '1')
+            self.db_session.add(new_column)
+
+            new_column = Column(row1.id, 0, 1, 'test-channel01', '1')
+            self.db_session.add(new_column)
+
+            new_column = Column(row1.id, 0, 3, 'test-channel10', '1')
+            self.db_session.add(new_column)
+
+            new_column = Column(row1.id, 1, 0, 'test-channel01', '1')
+            self.db_session.add(new_column)
+
+            # create row
+            row2 = Row(new_tab.id, 2)
+            self.db_session.add(row2)
+            self.db_session.commit()
+
+            # create row2 cols
+            new_column = Column(row2.id, 0, 0, 'test-channel00', '1')
+            self.db_session.add(new_column)
+
+            new_column = Column(row2.id, 1, 0, 'test-channel10', '1')
+            self.db_session.add(new_column)
+
+            self.db_session.commit()
 
             self.db_session.commit()
             return True

@@ -110,18 +110,20 @@ class DashboardController(object):
         self.db_controller.create_new_user()
 
     def render_tab(self, tab_order_or_tab_name):
-        joined_tabs = self.db_controller.get_joined_tabs()
+        joined_tabs = self.db_controller.get_channels()
 
+        title = '. . . Tab Not Found . . .'
         return_array = {}
+
         for channel in joined_tabs:
             # if it is the right tab, add the channel
             # check tab_order or tab_name
-            if (isinstance(tab_order_or_tab_name, int) and channel.Tab.order == tab_order_or_tab_name) or (isinstance(tab_order_or_tab_name, str) and channel.Tab.name == tab_order_or_tab_name):
+            if (isinstance(tab_order_or_tab_name, int) and channel.Tab.order == tab_order_or_tab_name) or channel.Tab.name.replace('-', ' ').replace('_', ' ').lower() == tab_order_or_tab_name.replace('-', ' ').replace('_', ' ').lower():
                 # gather info
                 row_order = channel.Row.order
                 column_number = channel.Column.column_num
                 column_order = channel.Column.order
-                channel = channel.Channel
+                channel_model = channel.Channel
 
                 # create the array structure as needed
                 if row_order not in return_array:
@@ -129,7 +131,15 @@ class DashboardController(object):
                 if column_number not in return_array[row_order]:
                     return_array[row_order][column_number] = {}
 
-                return_array[row_order][column_number][column_order] = channel
+                return_array[row_order][column_number][column_order] = channel_model
+                title = channel.Tab.name
 
-        return return_array
+        return title, return_array
 
+    def get_tabs(self):
+        tabs = self.db_controller.get_tabs()
+        tab_names = []
+        for tab in tabs:
+            tab_names.append(tab.Tab.name)
+
+        return tab_names

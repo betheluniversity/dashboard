@@ -21,14 +21,18 @@ class DashboardView(FlaskView):
         """
 
     def index(self):
-        tab = self.base.render_tab(1) # currently this is just using 1 as the id. later, this should use tab_order
+        tab_results = self.base.render_tab(1) # currently this is just using 1 as the id. later, this should use tab_order
+        tabs = self.base.get_tabs()
         title = 'Home'
+
         return render_template('tab_render.html', **locals())
 
     @route('/tab/<tab_name>')
     def test(self, tab_name):
-        tab = self.base.render_tab(1)  # currently this is just using 1 as the id. later, this should use tab_order
-        title = 'Home'
+        title, tab_results = self.base.render_tab(tab_name)  # currently this is just using 1 as the id. later, this should use tab_order
+        # tab_results = self.base.render_tab(1)
+        tabs = self.base.get_tabs()
+
         return render_template('tab_render.html', **locals())
 
     def clear_db(self):
