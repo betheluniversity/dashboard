@@ -7,12 +7,13 @@
         <h1>{{ title }}</h1>
         <hr />
 
-        {% for row_key, row_value in tab_results.iteritems() %}
+        {% for tab_row, tab_value in tab_results.iteritems() %}
             <div class="row">
-                {% for col_key, col_value in row_value.iteritems() %}
+                {% for col_key, col_value in tab_value.iteritems() %}
                     <div class="col-md-6">
                         {% for channel_key, channel_value in col_value.iteritems() %}
                             <div class="card" style="padding:1em; background-color:lightblue">
+{#                            <div class="card col-md-{{ channel_value.size }}" style="padding:1em; background-color:lightblue">#}
                                 <h5>{{ channel_value.name }}</h5>
                                 size = {{ channel_value.size }}
                                 {# get content here #}

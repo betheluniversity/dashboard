@@ -11,6 +11,7 @@ class TestChannel(ChannelBase):
         super(TestChannel, self).__init__()
 
     def render(self):
+
         html = 'This is a test channel. Currently it is quite sad. :('
         html = html.decode('utf-8')
         return render_template("test_channel.html", **locals())
