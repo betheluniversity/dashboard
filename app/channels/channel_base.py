@@ -6,5 +6,5 @@ class ChannelBase(object):
     def __init__(self):
         pass
 
-    def render(self):
+    def render(self, channel_options_table):
         pass

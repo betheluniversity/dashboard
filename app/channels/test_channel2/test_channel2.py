@@ -6,10 +6,10 @@ from app.channels import ChannelBase
 from app.channels.test_channel.models import TestChannelModel
 
 # todo: make a blueprint so that we can specify the templates folder?
-class TestChannel(ChannelBase):
+class TestChannel2(ChannelBase):
     
     def __init__(self):
-        super(TestChannel, self).__init__()
+        super(TestChannel2, self).__init__()
 
     def render(self):
         # TestChannelModel()

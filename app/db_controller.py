@@ -8,9 +8,10 @@ class DBController(object):
         self.db_session = db.session
 
     def get_channels(self):
-        channels = self.db_session.query(User, Tab, Row, Column, Channel)\
+        channels = self.db_session.query(User, Tab, Row, ColumnFormat, Column, Channel)\
             .join(Tab)\
             .join(Row)\
+            .join(ColumnFormat)\
             .join(Column)\
             .join(Channel)\
             .filter(User.username==session['username'])\
@@ -55,83 +56,60 @@ class DBController(object):
             new_user_role = UserRole(user_id=new_user.id, role_id=2)
             self.db_session.add(new_user_role)
 
-            # create tab
-            new_tab = Tab(user_id=new_user.id, name='Home', order=1)
-            self.db_session.add(new_tab)
+            # create tab1
+            new_tab1 = Tab(user_id=new_user.id, name='Home', order=1)
+            self.db_session.add(new_tab1)
             self.db_session.commit()
 
-            # create row
-            row1 = Row(new_tab.id, 1)
+            # create row1
+            row1 = Row(new_tab1.id, 1, 1)
             self.db_session.add(row1)
             self.db_session.commit()
 
             # create row1 cols
-            new_column = Column(row1.id, 0, 0, 'test-channel00', '1')
+            new_column = Column(row1.id, 0, 0, 2)
             self.db_session.add(new_column)
 
-            new_column = Column(row1.id, 0, 2, 'test-channel02', '1')
+            new_column = Column(row1.id, 0, 1, 2)
             self.db_session.add(new_column)
 
-            new_column = Column(row1.id, 0, 1, 'test-channel01', '1')
+            new_column = Column(row1.id, 0, 2, 2)
             self.db_session.add(new_column)
 
-            new_column = Column(row1.id, 1, 0, 'test-channel10', '1')
+            new_column = Column(row1.id, 1, 0, 2)
             self.db_session.add(new_column)
 
-            new_column = Column(row1.id, 1, 1, 'test-channel01', '1')
+            new_column = Column(row1.id, 1, 1, 2)
             self.db_session.add(new_column)
 
-            # create row
-            row2 = Row(new_tab.id, 2)
+            # create row2
+            row2 = Row(new_tab1.id, 2, 2)
             self.db_session.add(row2)
             self.db_session.commit()
 
             # create row2 cols
-            new_column = Column(row2.id, 0, 0, 'test-channel00', '1')
+            new_column = Column(row2.id, 0, 0, 1)
             self.db_session.add(new_column)
 
-            new_column = Column(row2.id, 1, 0, 'test-channel10', '1')
+            new_column = Column(row2.id, 1, 0, 1)
             self.db_session.add(new_column)
 
-            # create tab
-            new_tab = Tab(user_id=new_user.id, name='Another Tab', order=2)
-            self.db_session.add(new_tab)
+            new_column = Column(row2.id, 2, 0, 1)
+            self.db_session.add(new_column)
+
+            # create tab2
+            new_tab2 = Tab(user_id=new_user.id, name='Another Tab', order=2)
+            self.db_session.add(new_tab2)
             self.db_session.commit()
 
-            # create row
-            row1 = Row(new_tab.id, 1)
-            self.db_session.add(row1)
+            # create row3
+            row3 = Row(new_tab2.id, 3, 3)
+            self.db_session.add(row3)
             self.db_session.commit()
 
-            # create row1 cols
-            new_column = Column(row1.id, 0, 0, 'test-channel00', '1')
+            # create row3 cols
+            new_column = Column(row3.id, 0, 0, 3)
             self.db_session.add(new_column)
-
-            new_column = Column(row1.id, 0, 2, 'test-channel02', '1')
-            self.db_session.add(new_column)
-
-            new_column = Column(row1.id, 0, 1, 'test-channel01', '1')
-            self.db_session.add(new_column)
-
-            new_column = Column(row1.id, 0, 3, 'test-channel10', '1')
-            self.db_session.add(new_column)
-
-            new_column = Column(row1.id, 1, 0, 'test-channel01', '1')
-            self.db_session.add(new_column)
-
-            # create row
-            row2 = Row(new_tab.id, 2)
-            self.db_session.add(row2)
-            self.db_session.commit()
-
-            # create row2 cols
-            new_column = Column(row2.id, 0, 0, 'test-channel00', '1')
-            self.db_session.add(new_column)
-
-            new_column = Column(row2.id, 1, 0, 'test-channel10', '1')
-            self.db_session.add(new_column)
-
-            self.db_session.commit()
 
             self.db_session.commit()
             return True
@@ -147,7 +125,19 @@ class DBController(object):
             new_role = Role(name='ROLE_VIEWER')
             self.db_session.add(new_role)
 
-            new_channel = Channel('My Test Channel', 'test_channel', 'TestChannel', 6)
+            # create column_formats
+            column_format1 = ColumnFormat('6-6')
+            self.db_session.add(column_format1)
+            column_format2 = ColumnFormat('4-4-4')
+            self.db_session.add(column_format2)
+            column_format3 = ColumnFormat('12')
+            self.db_session.add(column_format3)
+
+            new_channel = Channel('My Test Channel (minsize4)', 'TestChannel', 4)
+            self.db_session.add(new_channel)
+            new_channel = Channel('My Test Channel (minsize6)', 'TestChannel', 6)
+            self.db_session.add(new_channel)
+            new_channel = Channel('My Test Channel (minsize12)', 'TestChannel2', 12)
             self.db_session.add(new_channel)
 
             self.db_session.commit()

@@ -9,10 +9,10 @@ from flask_admin.contrib.sqla import ModelView
 _basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 
-# app.config.from_object(os.environ['dashboard_config'])
+app.config.from_object(os.environ['dashboard_config'])
 db = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(_basedir, 'test.db')
-db.create_all()
+# app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(_basedir, 'test.db')
+# db.create_all()
 
 # views templates folder. Any folder in app.channels can contain templates
 folders = []

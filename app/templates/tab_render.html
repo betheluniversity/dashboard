@@ -7,20 +7,25 @@
         <h1>{{ title }}</h1>
         <hr />
 
+        {# For each row #}
         {% for tab_row, tab_value in tab_results.iteritems() %}
             <div class="row">
-                {% for col_key, col_value in tab_value.iteritems() %}
-                    <div class="col-md-6">
+                {% set column_formats = tab_value.format.split('-') %}
+                {% set column_counter = 0 %}
+                {# For each Column #}
+                {% for col_key, col_value in tab_value.columns.iteritems() %}
+                    <div class="col-md-{{ column_formats[column_counter] }}">
+                        {# For each Channel in a column #}
                         {% for channel_key, channel_value in col_value.iteritems() %}
-                            <div class="card" style="padding:1em; background-color:lightblue">
-{#                            <div class="card col-md-{{ channel_value.size }}" style="padding:1em; background-color:lightblue">#}
+                            <div style="padding:1em; margin:1em; background-color:lightblue">
                                 <h5>{{ channel_value.name }}</h5>
                                 size = {{ channel_value.size }}
-                                {# get content here #}
+                                 get content here
                                 {{ channel_value|render_channel|safe }}
                             </div>
                         {% endfor %}
                     </div>
+                    {% set column_counter = column_counter + 1 %}
                 {% endfor %}
             </div>
         {% endfor %}

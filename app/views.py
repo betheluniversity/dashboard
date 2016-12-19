@@ -42,14 +42,12 @@ class DashboardView(FlaskView):
     def render_channel(self):
         # in this case, self is the channel.
         channel_class_name = self.channel_class_name
-        channel_options_table = self.channel_options_table
 
         # Todo: this might need to be done on the other side, so pass over the channel_options_table
         # we need to gather all models in the /channels directory
         # Then use the channel_options_table to find the correct models.py to search through
         # then find the user's options in the corresponding table
         # then pass that along
-
 
         channel_output = render_channel(channel_class_name)
 

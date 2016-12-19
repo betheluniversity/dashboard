@@ -113,7 +113,7 @@ class DashboardController(object):
         joined_tabs = self.db_controller.get_channels()
 
         title = '. . . Tab Not Found . . .'
-        return_array = {}
+        tab_content = {}
 
         for channel in joined_tabs:
             # if it is the right tab, add the channel
@@ -123,22 +123,27 @@ class DashboardController(object):
                         or (channel.Tab.name.replace('-', ' ').replace('_', ' ').lower() == tab_order_or_tab_name.replace('-', ' ').replace('_', ' ').lower()):
                     # gather info
                     row_order = channel.Row.order
+                    format = channel.ColumnFormat.format
                     column_number = channel.Column.column_num
                     column_order = channel.Column.order
                     channel_model = channel.Channel
 
                     # create the array structure as needed
-                    if row_order not in return_array:
-                        return_array[row_order] = {}
-                    if column_number not in return_array[row_order]:
-                        return_array[row_order][column_number] = {}
+                    if row_order not in tab_content:
+                        tab_content[row_order] = {
+                            'format': format,
+                            'columns': {}
+                        }
+                    if column_number not in tab_content[row_order]['columns']:
+                        tab_content[row_order]['columns'][column_number] = {}
 
-                    return_array[row_order][column_number][column_order] = channel_model
+                    tab_content[row_order]['columns'][column_number][column_order] = channel_model
+
                     title = channel.Tab.name
             except:
                 continue
 
-        return title, return_array
+        return title, tab_content
 
     def get_tabs(self):
         tabs = self.db_controller.get_tabs()
