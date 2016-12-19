@@ -17,10 +17,8 @@
                     <div class="col-md-{{ column_formats[column_counter] }}">
                         {# For each Channel in a column #}
                         {% for channel_key, channel_value in col_value.iteritems() %}
-                            <div style="padding:1em; margin:1em; background-color:lightblue">
+                            <div style="padding:1em; margin:1em; background-color:#f5f5f5">
                                 <h5>{{ channel_value.name }}</h5>
-                                size = {{ channel_value.size }}
-                                 get content here
                                 {{ channel_value|render_channel|safe }}
                             </div>
                         {% endfor %}

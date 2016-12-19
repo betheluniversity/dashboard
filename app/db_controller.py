@@ -7,6 +7,11 @@ class DBController(object):
     def __init__(self):
         self.db_session = db.session
 
+    def get_current_users_id(self):
+        user = self.db_session.query(User).filter(User.username == session['username']).first()
+
+        return user.id
+
     def get_channels(self):
         channels = self.db_session.query(User, Tab, Row, ColumnFormat, Column, Channel)\
             .join(Tab)\

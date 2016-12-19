@@ -1,6 +1,7 @@
 from app import app, db
 
-class TestChannelModel(db.Model):
+
+class TestChannelOptions(db.Model):
     __tablename__ = 'dashboard_test_channel'
 
     id = db.Column(db.Integer, primary_key=True)

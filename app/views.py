@@ -37,18 +37,13 @@ class DashboardView(FlaskView):
         self.base.db_controller.clear_db_generated_content()
         return 'done'
 
-    # this should be cached at some point
+    # TODO: currently this is using a jinja filter. This is to render the channel as needed from the html side,
+    # so we don't do it all at once on the python side.
+    # this should be cached for a given user at some point
     @app.template_filter('render_channel')
     def render_channel(self):
         # in this case, self is the channel.
         channel_class_name = self.channel_class_name
-
-        # Todo: this might need to be done on the other side, so pass over the channel_options_table
-        # we need to gather all models in the /channels directory
-        # Then use the channel_options_table to find the correct models.py to search through
-        # then find the user's options in the corresponding table
-        # then pass that along
-
         channel_output = render_channel(channel_class_name)
 
         # Todo: we need this to be able to be rendered via ajax

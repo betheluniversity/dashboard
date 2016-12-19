@@ -3,7 +3,6 @@ import requests
 from flask import render_template, Blueprint
 
 from app.channels import ChannelBase
-from app.channels.test_channel.models import TestChannelModel
 
 # todo: make a blueprint so that we can specify the templates folder?
 class TestChannel2(ChannelBase):
@@ -18,4 +17,4 @@ class TestChannel2(ChannelBase):
 
         html = 'This is a test channel. Currently it is quite sad. :('
         html = html.decode('utf-8')
-        return render_template("test_channel.html", **locals())
+        return render_template("test_channel2.html", **locals())
