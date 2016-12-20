@@ -8,24 +8,47 @@
         <hr />
 
         {# For each row #}
+        {% set row_counter = 0 %}
         {% for tab_row, tab_value in tab_results.iteritems() %}
             <div class="row">
                 {% set column_formats = tab_value.format.split('-') %}
                 {% set column_counter = 0 %}
+
                 {# For each Column #}
                 {% for col_key, col_value in tab_value.columns.iteritems() %}
                     <div class="col-md-{{ column_formats[column_counter] }}">
+                        {% set channel_counter = 0 %}
+
                         {# For each Channel in a column #}
                         {% for channel_key, channel_value in col_value.iteritems() %}
                             <div style="padding:1em; margin:1em; background-color:#f5f5f5">
                                 <h5>{{ channel_value.name }}</h5>
-                                {{ channel_value|render_channel|safe }}
+                                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}"></div>
+
+                                <script type="text/javascript">
+                                    $(document).ready(function(){
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "{{ url_for('DashboardView:render_channel') }}",
+                                            data: JSON.stringify({'channel':'{{ channel_value|tojson|safe }}'}),
+                                            contentType: 'application/json;charset=UTF-8',
+                                            success: function (data) {
+                                                $('#row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}').html(data);
+                                            }
+                                        });
+
+                                    });
+                                </script>
                             </div>
+                            {% set channel_counter = channel_counter + 1 %}
                         {% endfor %}
+
                     </div>
                     {% set column_counter = column_counter + 1 %}
                 {% endfor %}
+
             </div>
+            {% set row_counter = row_counter + 1 %}
         {% endfor %}
     </div>
 {% endblock %}

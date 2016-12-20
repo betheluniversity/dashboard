@@ -1,5 +1,7 @@
+import json
+
 from flask.ext.classy import FlaskView, route
-from flask import render_template
+from flask import render_template, request
 from flask import session
 
 from app.channels import render_channel
@@ -37,17 +39,12 @@ class DashboardView(FlaskView):
         self.base.db_controller.clear_db_generated_content()
         return 'done'
 
-    # TODO: currently this is using a jinja filter. This is to render the channel as needed from the html side,
-    # so we don't do it all at once on the python side.
-    # this should be cached for a given user at some point
-    @app.template_filter('render_channel')
+    # todo: this should be cached for a given user at some point
+    @route("/render_channel/", methods=['POST'])
     def render_channel(self):
-        # in this case, self is the channel.
-        channel_class_name = self.channel_class_name
+
+        channel = json.loads(request.data).get('channel')
+        channel_class_name = json.loads(channel).get('channel_class_name')
         channel_output = render_channel(channel_class_name)
-
-        # Todo: we need this to be able to be rendered via ajax
-
-        # todo: we also would love to potentially be able to cache these
 
         return channel_output

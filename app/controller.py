@@ -137,7 +137,10 @@ class DashboardController(object):
                     if column_number not in tab_content[row_order]['columns']:
                         tab_content[row_order]['columns'][column_number] = {}
 
-                    tab_content[row_order]['columns'][column_number][column_order] = channel_model
+                    tab_content[row_order]['columns'][column_number][column_order] = {
+                        'channel_class_name': channel_model.channel_class_name,
+                        'name': channel_model.name
+                    }
 
                     title = channel.Tab.name
             except:
