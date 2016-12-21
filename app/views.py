@@ -4,7 +4,6 @@ from flask.ext.classy import FlaskView, route
 from flask import render_template, request
 from flask import session
 
-from app.channels import render_channel
 from app.controller import DashboardController
 
 from app import app
@@ -38,14 +37,3 @@ class DashboardView(FlaskView):
     def clear_db(self):
         self.base.db_controller.clear_db_generated_content()
         return 'done'
-
-    # this was using ajax to render channels
-    # todo: this should be cached for a given user at some point
-    @route("/render_channel/", methods=['POST'])
-    def render_channel(self):
-
-        channel = json.loads(request.data).get('channel')
-        channel_class_name = json.loads(channel).get('channel_class_name')
-        channel_output = render_channel(channel_class_name)
-
-        return channel_output
