@@ -3,6 +3,21 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block main_content %}
+    <script type="text/javascript">
+        function ajax_load_channel(url, data, id){
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (data) {
+                        $(id).html(data);
+                }
+            });
+        }
+    </script>
+
+    {# todo: update the classes on this div. These came with the preset stuff #}
     <div class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 main">
         <h1>{{ title }}</h1>
         <hr />
@@ -23,22 +38,15 @@
                         {% for channel_key, channel_value in col_value.iteritems() %}
                             <div style="padding:1em; margin:1em; background-color:#f5f5f5">
                                 <h5>{{ channel_value.name }}</h5>
-                                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}"></div>
+                                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">{{ channel_value.html | safe }}</div>
 
-                                <script type="text/javascript">
-                                    $(document).ready(function(){
-                                        $.ajax({
-                                            type: "POST",
-                                            url: "{{ url_for('DashboardView:render_channel') }}",
-                                            data: JSON.stringify({'channel':'{{ channel_value|tojson|safe }}'}),
-                                            contentType: 'application/json;charset=UTF-8',
-                                            success: function (data) {
-                                                $('#row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}').html(data);
-                                            }
-                                        });
-
-                                    });
-                                </script>
+                                {# This code was to use AJAX with rendering channels #}
+{#                                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">. . . Loading . . .</div>#}
+{#                                <script type="text/javascript">#}
+{#                                    $(document).ready(function(){#}
+{#                                        ajax_load_channel("{{ url_for('DashboardView:render_channel') }}", JSON.stringify({'channel':'{{ channel_value|tojson|safe }}'}), '#row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}');#}
+{#                                    });#}
+{#                                </script>#}
                             </div>
                             {% set channel_counter = channel_counter + 1 %}
                         {% endfor %}

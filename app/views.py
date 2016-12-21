@@ -39,6 +39,7 @@ class DashboardView(FlaskView):
         self.base.db_controller.clear_db_generated_content()
         return 'done'
 
+    # this was using ajax to render channels
     # todo: this should be cached for a given user at some point
     @route("/render_channel/", methods=['POST'])
     def render_channel(self):

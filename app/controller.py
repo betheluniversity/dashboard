@@ -10,6 +10,8 @@ import requests
 
 from app.models import *
 from app.db_controller import DBController
+import json
+from app.channels import render_channel
 
 from app import app
 
@@ -139,7 +141,8 @@ class DashboardController(object):
 
                     tab_content[row_order]['columns'][column_number][column_order] = {
                         'channel_class_name': channel_model.channel_class_name,
-                        'name': channel_model.name
+                        'name': channel_model.name,
+                        'html': self.render_channel2(channel_model.channel_class_name)
                     }
 
                     title = channel.Tab.name
@@ -155,3 +158,8 @@ class DashboardController(object):
             tab_names.append(tab.Tab.name)
 
         return tab_names
+
+    def render_channel2(self, channel_class_name):
+        channel_output = render_channel(channel_class_name)
+
+        return channel_output
