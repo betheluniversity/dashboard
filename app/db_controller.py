@@ -28,6 +28,22 @@ class DBController(object):
 
         return channels
 
+    def get_all_channels_values(self):
+        results = self.db_session.query(Channel).order_by(Channel.name).all()
+        channels = []
+        for result in results:
+            channels.append(result.name)
+
+        return channels
+
+    def get_column_formats_values(self):
+        results = self.db_session.query(ColumnFormat).order_by(ColumnFormat.order).all()
+        formats = []
+        for result in results:
+            formats.append(result.format)
+
+        return formats
+
     def get_tabs(self):
         tabs = self.db_session.query(User, Tab)\
             .join(Tab)\
@@ -124,6 +140,7 @@ class DBController(object):
             return False
 
     def init_db(self):
+        # Todo: make this check more accurate? Maybe check if things exist individually
         if Role.query.filter(Role.name=='ROLE_ADMIN').first() is None:
             new_role = Role(name='ROLE_ADMIN')
             self.db_session.add(new_role)
@@ -131,11 +148,11 @@ class DBController(object):
             self.db_session.add(new_role)
 
             # create column_formats
-            column_format1 = ColumnFormat('6-6')
+            column_format1 = ColumnFormat('6-6',2)
             self.db_session.add(column_format1)
-            column_format2 = ColumnFormat('4-4-4')
+            column_format2 = ColumnFormat('4-4-4', 1)
             self.db_session.add(column_format2)
-            column_format3 = ColumnFormat('12')
+            column_format3 = ColumnFormat('12', 3)
             self.db_session.add(column_format3)
 
             new_channel = Channel('My Test Channel (minsize4)', 'TestChannel', 4)

@@ -34,6 +34,14 @@ class DashboardView(FlaskView):
 
         return render_template('tab_render.html', **locals())
 
+    # todo: remove this once testing is done
     def clear_db(self):
         self.base.db_controller.clear_db_generated_content()
         return 'done'
+
+    def admin_view(self):
+        tabs = self.base.get_tabs()
+        column_formats = self.base.db_controller.get_column_formats_values()
+        channels = self.base.db_controller.get_all_channels_values()
+
+        return render_template('admin_base.html', **locals())

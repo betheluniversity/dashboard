@@ -70,9 +70,11 @@ class ColumnFormat(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     format = db.Column(db.String, nullable=False)
+    order = db.Column(db.String, nullable=False)
 
-    def __init__(self, format):
+    def __init__(self, format, order):
         self.format = format
+        self.order = order
 
 
 class Column(db.Model):

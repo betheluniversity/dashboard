@@ -1,40 +1,35 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ title }}{% endblock %}
+{% block main_content_title %}{{ title }}{% endblock %}
 
 {% block main_content %}
-    {# todo: update the classes on this div. These came with the preset stuff #}
-    <div class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 main">
-        <h1>{{ title }}</h1>
-        <hr />
+    {# For each row #}
+    {% set row_counter = 0 %}
+    {% for tab_row, tab_value in tab_results.iteritems() %}
+        <div class="row">
+            {% set column_formats = tab_value.format.split('-') %}
+            {% set column_counter = 0 %}
 
-        {# For each row #}
-        {% set row_counter = 0 %}
-        {% for tab_row, tab_value in tab_results.iteritems() %}
-            <div class="row">
-                {% set column_formats = tab_value.format.split('-') %}
-                {% set column_counter = 0 %}
+            {# For each Column #}
+            {% for col_key, col_value in tab_value.columns.iteritems() %}
+                <div class="col-md-{{ column_formats[column_counter] }}">
+                    {% set channel_counter = 0 %}
 
-                {# For each Column #}
-                {% for col_key, col_value in tab_value.columns.iteritems() %}
-                    <div class="col-md-{{ column_formats[column_counter] }}">
-                        {% set channel_counter = 0 %}
+                    {# For each Channel in a column #}
+                    {% for channel_key, channel_value in col_value.iteritems() %}
+                        <div style="padding:1em; margin:1em; background-color:#f5f5f5">
+                            <h5>{{ channel_value.name }}</h5>
+                            <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">{{ channel_value.html | safe }}</div>
+                        </div>
+                        {% set channel_counter = channel_counter + 1 %}
+                    {% endfor %}
 
-                        {# For each Channel in a column #}
-                        {% for channel_key, channel_value in col_value.iteritems() %}
-                            <div style="padding:1em; margin:1em; background-color:#f5f5f5">
-                                <h5>{{ channel_value.name }}</h5>
-                                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">{{ channel_value.html | safe }}</div>
-                            </div>
-                            {% set channel_counter = channel_counter + 1 %}
-                        {% endfor %}
+                </div>
+                {% set column_counter = column_counter + 1 %}
+            {% endfor %}
 
-                    </div>
-                    {% set column_counter = column_counter + 1 %}
-                {% endfor %}
-
-            </div>
-            {% set row_counter = row_counter + 1 %}
-        {% endfor %}
-    </div>
+        </div>
+        {% set row_counter = row_counter + 1 %}
+    {% endfor %}
 {% endblock %}

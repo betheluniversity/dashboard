@@ -1,0 +1,10 @@
+
+{% macro create_select(id, options, label) %}
+    <label>{{ label }}
+        <select id="{{ id }}">
+            {% for option in options %}
+                <option>{{ option }}</option>
+            {% endfor %}
+        </select>
+    </label>
+{% endmacro %}

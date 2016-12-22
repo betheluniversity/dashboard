@@ -1,7 +1,7 @@
 from app import app, db
 
 class TestChannel2Model(db.Model):
-    __tablename__ = 'dashboard_test_channel'
+    __tablename__ = 'dashboard_test_channel2'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('dashboard_user.id'))

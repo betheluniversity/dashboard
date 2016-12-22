@@ -11,6 +11,8 @@ app = Flask(__name__)
 
 app.config.from_object(os.environ['dashboard_config'])
 db = SQLAlchemy(app)
+
+# These 2 lines are helpful for creating the initial db
 # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(_basedir, 'test.db')
 # db.create_all()
 

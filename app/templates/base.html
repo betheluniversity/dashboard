@@ -32,8 +32,14 @@
       <div class="row">
             {{ side_nav.render(tabs) }}
 
-            {% block main_content %}
-            {% endblock %}
+            {# todo: update the classes on this div. These came with the preset stuff #}
+            <div class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 main">
+                <h1>{% block main_content_title %}{% endblock %}</h1>
+                <hr />
+
+                {% block main_content %}
+                {% endblock %}
+            </div>
       </div>
     </div>
 
