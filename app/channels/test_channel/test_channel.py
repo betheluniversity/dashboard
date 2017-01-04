@@ -31,6 +31,10 @@ class TestChannel(ChannelBase):
             db_session.commit()
             color = new_option.color
 
+        import random
+        if random.randint(1, 10) == 1:
+            raise Exception('test')
+
         html = 'This is a test channel. Currently it is quite sad. :( However, this color you see is gotten from the dashboad_test_channel table! yay.'
         html = html.decode('utf-8')
         return render_template("test_channel.html", **locals())
