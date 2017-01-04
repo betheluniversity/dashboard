@@ -15,6 +15,6 @@ class TestChannel2(ChannelBase):
         # todo: we need db_session
         # todo: we need to access the channel options
 
-        html = 'This is a test channel. Currently it is quite sad. :('
+        html = 'This is a test channel2. Currently it is quite sad. :('
         html = html.decode('utf-8')
         return render_template("test_channel2.html", **locals())
