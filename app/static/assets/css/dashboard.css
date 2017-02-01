@@ -100,3 +100,15 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+.channel {
+  padding:1em;
+  margin:1em;
+  background-color:#f5f5f5;
+}
+
+.selected-channel {
+  border-style: solid;
+  border-width: medium;
+  border-color: orange;
+}

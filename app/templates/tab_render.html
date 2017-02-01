@@ -18,9 +18,9 @@
 
                     {# For each Channel in a column #}
                     {% for channel_key, channel_value in col_value.iteritems() %}
-                        <div style="padding:1em; margin:1em; background-color:#f5f5f5">
+                        <div id="{{ channel_value.channel_class_name|lower }}{{ row_counter }}{{ column_counter }}{{ channel_counter }}" class="channel">
                             <h5>{{ channel_value.name }}</h5>
-                            <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">{{ channel_value.html | safe }}</div>
+                            <div>{{ channel_value.html | safe }}</div>
                         </div>
                         {% set channel_counter = channel_counter + 1 %}
                     {% endfor %}
@@ -32,4 +32,18 @@
         </div>
         {% set row_counter = row_counter + 1 %}
     {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        // http://stackoverflow.com/questions/3552944/how-to-get-the-anchor-from-the-url-using-jquery
+        var url = window.location.hash, idx = url.indexOf("#");
+        var hash = idx != -1 ? url.substring(idx+1) : "";
+        if( hash != ''){
+            $('#' + hash).addClass('selected-channel');
+            $('html, body').animate({
+                scrollTop: $("#" + hash).offset().top - 100
+            }, 2000);
+        }
+    </script>
 {% endblock %}
