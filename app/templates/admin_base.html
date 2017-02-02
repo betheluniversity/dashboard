@@ -1,72 +1,65 @@
 {% extends 'base.html' %}
-{% import 'tools/admin_render.html' as admin_render %}
 
 {% block title %}Admin{% endblock %}
 {% block main_content_title %}Admin{% endblock %}
 
 {% block main_content %}
-    {# A) I attempted to do this with jinja/js. However, this doesn't allow for dynamic rendering easiely #}
-    {# B) I tried using the flask/jinja template renderer. This doesn't work well with multiple variables #}
-    {# C) I think we should use AJAX with the add tab/row/channel buttons. This will allow us to wrap all of the html
-        in their own files, along with reducing the crap that JS brings. We should be able to use python to better
-        control the logic of the JS.
 
-        3 parts to this process:
-        1) be able to render more rows/columns/tabs
-            -- each button and dropdown should probably have an AJAX call associated with it.
-            -- the html would live in templates
-            -- The difficult part is carrying the id's and classes around correctly
-        2) be able to load the current tab data into the form
-            -- make sure that the current form can hold data nicely, then this process should be easy, since you are
-                   essentially automatically clicking through the form
-        3) be able to submit the form to save into the DB
-            -- create id's similar to (row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }})
-            -- that should give enough information (along with which tab) to update and replace the current user's tabs
-     #}
-    {# D) If we somehow can't make this work, then just do it all in JS and cry for days :'( #}
-
-
-
-    {{ admin_render.create_select('tab', tabs, 'Choose a tab') }}
-    <button>+ New Tab</button>
+    {{ tab_select | safe }}
+    <button class="add-tab btn btn-outline-primary">+ New Tab</button>
     <hr>
+    <div id="form-data"></div>
+    <hr>
+    <input class='btn btn-primary' type="submit" />
 
-    {{ admin_render.create_select('formats1', column_formats, 'Choose a format') }}
-    <div class="row">
-        <div class="col-md-6" style="padding:1em; background-color:darkgray">
-            <div style="padding:1em; margin:1em; background-color:#f5f5f5">
-                <h5>Test</h5>
-                <div id="row-{{ row_counter }}-col-{{ column_counter }}-channel-{{ channel_counter }}">
-                    {{ admin_render.create_select('1', channels, 'Choose a channel') }}
-                </div>
-            </div>
-            <button>+ New Channel</button>
-        </div>
-        <div class="col-md-6" style="padding:1em; background-color:darkgray">
-            <div style="padding:1em; margin:1em; background-color:#f5f5f5">
-                <h5>Test</h5>
-                <div>
-                    {{ admin_render.create_select('2', channels, 'Choose a channel') }}
-                </div>
-            </div>
-            <button>+ New Channel</button>
-        </div>
-    </div>
+{% endblock %}
 
-    {{ admin_render.create_select('formats2', column_formats, 'Choose a format') }}
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).on('click', '.add-row', function(){
+            var current_element = $(this);
+            var url = '/admin/tool/add-row';
+            var post_data = {};
+            // Todo: need to pass over what the new id should be?
+            $.post(url, post_data, function (data) {
+                current_element.before(data);
+            });
+        });
 
-    <div class="row">
-        <div class="col-md-12" style="padding:1em; background-color:darkgray">
-            <div style="padding:1em; margin:1em; background-color:#f5f5f5">
-                <h5>Test</h5>
-                <div>
-                    {{ admin_render.create_select('3', channels, 'Choose a channel') }}
-                </div>
-            </div>
-            <button>+ New Channel</button>
-        </div>
-    </div>
+        // Todo: this could make use of the add-row POST request?
+        $('.add-tab').click(function () {
+            var form_data_element = $('#form-data');
+            form_data_element.html('');
 
+            var url = '/admin/tool/add-row';
+            var post_data = {};
+            // Todo: need to pass over what the new id should be?
+            $.post(url, post_data, function (data) {
+                form_data_element.append(data);
+                form_data_element.append($('<button>').addClass('add-row btn btn-outline-primary').html('+ Add Row'));
+            });
+        });
 
-    <input type="submit" />
+        $(document).on('click', '.add-channel', function(){
+            var current_element = $(this);
+            var url = '/admin/tool/add-channel';
+            var post_data = {};
+            // Todo: need to pass over what the new id should be?
+            $.post(url, post_data, function (data) {
+                current_element.before(data);
+            });
+        });
+
+        $(document).on('change', '.choose-format', function() {
+            var current_element = $(this);
+            var url = '/admin/tool/change-format';
+            var post_data = { 'selected_option': current_element.val() };
+
+            // Todo: need to pass over what the new id should be?
+            $.post(url, post_data, function (data) {
+                current_element.parent().parent().children('.row-contents').html(data);
+            });
+        });
+
+    </script>
 {% endblock %}

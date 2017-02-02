@@ -1,0 +1,5 @@
+{% for row_width in chosen_column_format.split('-') %}
+    <div class="col-sm-{{ row_width }}">
+        <button class="add-channel btn btn-outline-primary">+ New Channel</button>
+    </div>
+{% endfor %}
