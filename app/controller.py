@@ -106,10 +106,10 @@ class DashboardController(object):
 
             return ret
 
-        self.db_controller.clear_db_generated_content()
-        self.db_controller.init_db()
-        init_user_session()
-        self.db_controller.create_new_user()
+        # self.db_controller.clear_db_generated_content()
+        # self.db_controller.init_db()
+        # init_user_session()
+        # self.db_controller.create_new_user()
 
     def render_tab(self, tab_order_or_tab_name):
         joined_tabs = self.db_controller.get_channels()
@@ -151,10 +151,13 @@ class DashboardController(object):
 
         return title, tab_content
 
-    def get_tabs(self):
+    def get_tabs(self, get_dict_with_ids=False):
         tabs = self.db_controller.get_tabs()
         tab_names = []
         for tab in tabs:
-            tab_names.append(tab.Tab.name)
+            if get_dict_with_ids:
+                tab_names.append({'label': tab.Tab.name, 'value': tab.Tab.id})
+            else:
+                tab_names.append(tab.Tab.name)
 
         return tab_names

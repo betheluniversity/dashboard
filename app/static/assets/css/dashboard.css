@@ -123,3 +123,7 @@ body {
   border-width: medium;
   border-color: black;
 }
+
+.admin-nav-div, .submit-nav {
+  float:right;
+}

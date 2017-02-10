@@ -32,7 +32,11 @@ class DBController(object):
         results = self.db_session.query(Channel).order_by(Channel.name).all()
         channels = []
         for result in results:
-            channels.append(result.name)
+            channels.append({
+                'label': result.name,
+                'value': result.id,
+                'min-size': result.min_size
+            })
 
         return channels
 
@@ -166,3 +170,56 @@ class DBController(object):
             return True
         else:
             return False
+
+    def create_new_tab(self, rform):
+        user = User.query.filter(User.username == session['username']).first()
+
+        # default tab name
+        if rform['tab-name'] == '':
+            tab_name = 'New Tab'
+        else:
+            tab_name = rform['tab-name']
+
+        # todo: set order properly, which probably means editing the others
+        tab = Tab(user_id=user.id, name=tab_name, order=3)
+        self.db_session.add(tab)
+        self.db_session.commit()
+
+        for key, new_channel_id in rform.iteritems():
+            try:
+                # only get the values of the channels
+                if 'channel-' in key:
+
+                    key_array = key.split('-')
+                    key_array.pop(0)  # remove the first element
+
+                    new_row = int(key_array[0])
+                    new_col_num = int(key_array[1])
+                    new_col_order = int(key_array[2])
+
+                    new_col_format = rform['columnformat-' + str(new_row)]
+                    new_col_format_id = ColumnFormat.query.filter(ColumnFormat.format == new_col_format).first().id
+
+                    # check if row already exists, if not, create a new row.
+                    row = Row.query.filter(Row.tab_id == tab.id)\
+                        .filter(Row.order == new_row).first()
+                    if not row:
+                        row = Row(tab.id, new_row, new_col_format_id)
+                        self.db_session.add(row)
+                        self.db_session.commit()
+
+                    # check if column/channel exists, if not create a new column
+                    column = Column.query.filter(Column.row_id == row.id)\
+                        .filter(Row.order == new_row)\
+                        .filter(Column.column_num == new_col_num)\
+                        .filter(Column.order == new_col_order).first()
+                    if not column:
+                        column = Column(row.id, new_col_num, new_col_order, new_channel_id)
+                        self.db_session.add(column)
+                        self.db_session.commit()
+
+            # if the field is not of the correct form, skip it
+            except:
+                pass
+
+        return True

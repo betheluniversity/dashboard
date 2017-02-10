@@ -1,6 +1,6 @@
 <div class="row channel-row">
     <label>Choose a format: {{ column_formats|safe}}</label>
-    <div class="row-contents">
+    <div class="admin-row-contents" data-row-counter="{{ row_id }}">
         {{ row_contents | safe }}
     </div>
 </div>

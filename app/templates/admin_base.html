@@ -3,14 +3,36 @@
 {% block title %}Admin{% endblock %}
 {% block main_content_title %}Admin{% endblock %}
 
+{% block side_nav_block %}
+    <div class="col-sm-3 col-md-2 sidebar">
+        <form>
+            <ul class="nav nav-sidebar">
+                {% for tab in tab_options %}
+                    <li>
+                        <a>{{ tab.label }}</a>
+                        <div class="admin-nav-div">
+                            <a href="#" class="up-arrow">&uarr;</a>
+                            <a class="down-arrow">&darr;</a>
+                            <input type="text" hidden="hidden" value="{{ tab.value }}" />
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <hr />
+            <input class="submit-nav btn btn-primary" value="Submit Nav" />
+            <input type='button' class="add-tab btn btn-outline-primary" value="+ New Tab" />
+        </form>
+    </div>
+{% endblock %}
+
 {% block main_content %}
 
-    {{ tab_select | safe }}
-    <button class="add-tab btn btn-outline-primary">+ New Tab</button>
-    <hr>
-    <div id="form-data"></div>
-    <hr>
-    <input class='btn btn-primary' type="submit" />
+    <form action="{{ url_for( 'DashboardView:admin_submit_tab') }}" method="POST">
+
+        <div id="form-data"></div>
+        <hr>
+        <input class='btn btn-primary' type="submit" />
+    </form>
 
 {% endblock %}
 
@@ -18,48 +40,87 @@
     <script type="text/javascript">
         $(document).on('click', '.add-row', function(){
             var current_element = $(this);
-            var url = '/admin/tool/add-row';
-            var post_data = {};
-            // Todo: need to pass over what the new id should be?
+            var url = "{{ url_for( 'DashboardView:admin_add_row') }}";
+            var new_row_count = $('.admin-row-contents').length + 1;
+
+            var post_data = {'row_id': new_row_count};
             $.post(url, post_data, function (data) {
                 current_element.before(data);
             });
         });
 
+        $(document).on('click', '.remove-row', function(){
+            var current_element = $(this);
+            current_element.siblings('.channel-row').last().remove();
+        });
+
         // Todo: this could make use of the add-row POST request?
-        $('.add-tab').click(function () {
+        $(document).on('click', '.add-tab', function(){
             var form_data_element = $('#form-data');
             form_data_element.html('');
 
-            var url = '/admin/tool/add-row';
-            var post_data = {};
-            // Todo: need to pass over what the new id should be?
+            var url = "{{ url_for( 'DashboardView:admin_add_row') }}";
+
+            var new_row_count = $('.admin-row-contents').length + 1;
+            var post_data = {'row_id': new_row_count};
             $.post(url, post_data, function (data) {
+                // Todo: update these to be in a jinja template . . .
+                form_data_element.append($('<label>').html('Tab name: '));
+                form_data_element.append($('<input>').attr({ type: 'text', name: 'tab-name' }));
                 form_data_element.append(data);
-                form_data_element.append($('<button>').addClass('add-row btn btn-outline-primary').html('+ Add Row'));
+                form_data_element.append($('<input>').attr({ type: 'button', class:'add-row btn btn-outline-primary', value:'+ Add Row'}));
+                form_data_element.append($('<input>').attr({ type: 'button', class:'remove-row btn btn-outline-danger', value:'- Remove Row'}));
             });
         });
 
         $(document).on('click', '.add-channel', function(){
             var current_element = $(this);
-            var url = '/admin/tool/add-channel';
-            var post_data = {};
-            // Todo: need to pass over what the new id should be?
+            var url = "{{ url_for( 'DashboardView:admin_add_channel') }}";
+            var new_channel_count = current_element.siblings('.admin-channel').length + 1;
+            var current_row_count = current_element.closest('.admin-row-contents').data('row-counter');
+            var current_column_count = current_element.closest('.admin-column-contents').data('column-counter');
+
+            var column_format = current_element.closest('.channel-row').find('.choose-format').val();
+
+            var post_data = {'channel_id': new_channel_count, 'current_row_count': current_row_count, 'current_column_count': current_column_count, 'column_format': column_format};
             $.post(url, post_data, function (data) {
                 current_element.before(data);
             });
         });
 
+        $(document).on('click', '.remove-channel', function(){
+            var current_element = $(this);
+
+            var current_row_count = current_element.closest('.admin-row-contents').data('row-counter');
+            var current_column_count = current_element.closest('.admin-column-contents').data('column-counter');
+
+            current_element.siblings('.admin-channel').last().remove();
+        });
+
         $(document).on('change', '.choose-format', function() {
             var current_element = $(this);
-            var url = '/admin/tool/change-format';
-            var post_data = { 'selected_option': current_element.val() };
+            var url = "{{ url_for( 'DashboardView:admin_change_format') }}";
+            var post_data = { 'selected_option': current_element.val()};
 
-            // Todo: need to pass over what the new id should be?
             $.post(url, post_data, function (data) {
-                current_element.parent().parent().children('.row-contents').html(data);
+                current_element.parent().parent().children('.admin-row-contents').html(data);
             });
         });
+
+        $(document).on('click', '.up-arrow', function() {
+            var current_element = $(this);
+            current_element.closest('li').prev().insertAfter(current_element.closest('li'))
+        });
+
+        $(document).on('click', '.down-arrow', function() {
+            var current_element = $(this);
+            if( $(this))
+            current_element.closest('li').next().insertBefore(current_element.closest('li'));
+        });
+
+        $(document).on('click', '.submit-nav', function() {
+
+        })
 
     </script>
 {% endblock %}

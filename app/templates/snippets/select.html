@@ -1,5 +1,9 @@
-<select id="{{ id }}" class="{{ select_class }}">
+<select id="{{ select_id }}" name="{{ select_id }}" class="{{ select_class }}">
     {% for option in options %}
-        <option>{{ option }}</option>
+        {% if option.value and option.label %}
+            <option value="{{ option.value }}">{{ option.label }}</option>
+        {% else %}
+            <option>{{ option }}</option>
+        {% endif %}
     {% endfor %}
 </select>
