@@ -11,9 +11,10 @@ from app import app
 # 1) DONE - add number indexing to each row/column/channel. We need to use the 'name' attr to pass the fields along
 # 2) DONE - use those numbers to create a tab in the DB
 # 3) DONE - delete channels/rows
-# 4) be able to set tab_order (maybe in the side nav, have arrows to move order up or down.
+# 4) DONE - be able to set tab_order (maybe in the side nav, have arrows to move order up or down.
 # 5) DONE - limit channels based on the size of the column
 # 6) Edit a tab
+# 7) Delete a tab
 
 class DashboardView(FlaskView):
 
@@ -71,7 +72,6 @@ class DashboardView(FlaskView):
         option_array = column_format.split('-')
         min_channel_size = int(option_array[current_column_count])
 
-        # todo: make sure this options list only contains channels that fit the column_format
         all_channels = self.base.db_controller.get_all_channels_values()
         options = []
         # loop over options removing any that don't work
@@ -108,9 +108,15 @@ class DashboardView(FlaskView):
     # changes the format to the one provided
     @route('/admin/submit-tab', methods=['POST'])
     def admin_submit_tab(self):
-
         rform = request.form
 
         self.base.db_controller.create_new_tab(rform)
         return redirect("/admin_view", code=302)
-        # return render_template('admin_base.html', **locals())
+
+    # changes the format to the one provided
+    @route('/admin/submit-nav', methods=['POST'])
+    def admin_submit_nav(self):
+        rform = request.form
+        new_nav_array = json.loads(rform['nav_order'])
+
+        return str(self.base.db_controller.update_tab_order(new_nav_array))

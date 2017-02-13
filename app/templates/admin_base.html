@@ -12,21 +12,21 @@
                         <a>{{ tab.label }}</a>
                         <div class="admin-nav-div">
                             <a href="#" class="up-arrow">&uarr;</a>
-                            <a class="down-arrow">&darr;</a>
-                            <input type="text" hidden="hidden" value="{{ tab.value }}" />
+                            <a href="#" class="down-arrow">&darr;</a>
+                            <input type="text" class="new-nav-item" hidden="hidden" value="{{ tab.value }}" />
                         </div>
                     </li>
                 {% endfor %}
             </ul>
             <hr />
             <input class="submit-nav btn btn-primary" value="Submit Nav" />
-            <input type='button' class="add-tab btn btn-outline-primary" value="+ New Tab" />
         </form>
     </div>
 {% endblock %}
 
 {% block main_content %}
-
+    <input type='button' class="add-tab btn btn-outline-primary" value="+ New Tab" />
+    <hr/>
     <form action="{{ url_for( 'DashboardView:admin_submit_tab') }}" method="POST">
 
         <div id="form-data"></div>
@@ -119,7 +119,22 @@
         });
 
         $(document).on('click', '.submit-nav', function() {
+            var order = 1;
+            var return_array = [];
+            $('.new-nav-item').each(function( index ) {
+                element = $('.new-nav-item').get(index);
+                return_array.push({'id': element.value, 'order': order});
+                order++;
+            });
 
+            var url = "{{ url_for( 'DashboardView:admin_submit_nav') }}";
+            var post_data = { 'nav_order': JSON.stringify(return_array) };
+
+            $.post(url, post_data, function (data) {
+                if( data == 'False') {
+                    alert('There was an issue with changing the navigation order.');
+                }
+            });
         })
 
     </script>

@@ -181,7 +181,9 @@ class DBController(object):
             tab_name = rform['tab-name']
 
         # todo: set order properly, which probably means editing the others
-        tab = Tab(user_id=user.id, name=tab_name, order=3)
+        all_users_tabs = Tab.query.filter(Tab.user_id == user.id).all()
+
+        tab = Tab(user_id=user.id, name=tab_name, order=len(all_users_tabs)+1)
         self.db_session.add(tab)
         self.db_session.commit()
 
@@ -221,5 +223,15 @@ class DBController(object):
             # if the field is not of the correct form, skip it
             except:
                 pass
+
+        return True
+
+    def update_tab_order(self, new_nav_array):
+        try:
+            for item in new_nav_array:
+                Tab.query.filter(Tab.id == item['id']).update({'order': item['order']})
+            self.db_session.commit()
+        except:
+            return False
 
         return True
