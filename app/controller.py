@@ -111,7 +111,10 @@ class DashboardController(object):
         # init_user_session()
         # self.db_controller.create_new_user()
 
+    # todo: tab_order should become tab_id?
     def render_tab(self, tab_order_or_tab_name):
+        user = User.query.filter(User.username == session['username']).first()
+
         joined_tabs = self.db_controller.get_channels()
 
         title = '. . . Tab Not Found . . .'
@@ -121,31 +124,33 @@ class DashboardController(object):
             # if it is the right tab, add the channel
             # check tab_order or tab_name
             try:
-                if (isinstance(tab_order_or_tab_name, int) and channel.Tab.order == tab_order_or_tab_name) \
-                        or (channel.Tab.name.replace('-', ' ').replace('_', ' ').lower() == tab_order_or_tab_name.replace('-', ' ').replace('_', ' ').lower()):
-                    # gather info
-                    row_order = channel.Row.order
-                    format = channel.ColumnFormat.format
-                    column_number = channel.Column.column_num
-                    column_order = channel.Column.order
-                    channel_model = channel.Channel
+                if channel.Tab.user_id == user.id:
+                    if  (isinstance(tab_order_or_tab_name, int) and channel.Tab.order == tab_order_or_tab_name) \
+                            or (channel.Tab.name.replace('-', ' ').replace('_', ' ').lower() == tab_order_or_tab_name.replace('-', ' ').replace('_', ' ').lower()):
+                        # gather info
+                        row_order = channel.Row.order
+                        format = channel.ColumnFormat.format
+                        column_number = channel.Column.column_num
+                        column_order = channel.Column.order
+                        channel_model = channel.Channel
 
-                    # create the array structure as needed
-                    if row_order not in tab_content:
-                        tab_content[row_order] = {
-                            'format': format,
-                            'columns': {}
+                        # create the array structure as needed
+                        if row_order not in tab_content:
+                            tab_content[row_order] = {
+                                'format': format,
+                                'columns': {}
+                            }
+                        if column_number not in tab_content[row_order]['columns']:
+                            tab_content[row_order]['columns'][column_number] = {}
+
+                        tab_content[row_order]['columns'][column_number][column_order] = {
+                            'id': channel_model.id,
+                            'channel_class_name': channel_model.channel_class_name,
+                            'name': channel_model.name,
+                            'html': render_channel(channel_model.channel_class_name)
                         }
-                    if column_number not in tab_content[row_order]['columns']:
-                        tab_content[row_order]['columns'][column_number] = {}
 
-                    tab_content[row_order]['columns'][column_number][column_order] = {
-                        'channel_class_name': channel_model.channel_class_name,
-                        'name': channel_model.name,
-                        'html': render_channel(channel_model.channel_class_name)
-                    }
-
-                    title = channel.Tab.name
+                        title = channel.Tab.name
             except:
                 continue
 
@@ -156,8 +161,66 @@ class DashboardController(object):
         tab_names = []
         for tab in tabs:
             if get_dict_with_ids:
-                tab_names.append({'label': tab.Tab.name, 'value': tab.Tab.id})
+                tab_names.append({'label': tab.Tab.name, 'value': tab.Tab.id, 'order': tab.Tab.order})
             else:
                 tab_names.append(tab.Tab.name)
 
         return tab_names
+
+    def render_admin_tab(self, tab_results, tab_title):
+        rendered_tab = ''
+        for row_index, row in tab_results.iteritems():
+            column_format = row['format']
+            channels = []
+            for column_index, column in row['columns'].iteritems():
+                for channel_index, channel in column.iteritems():
+                    if column_index not in channels:
+                        channels.append([])
+                    # channels[column_index].append(channel['html'])
+                    channels[column_index].append(self.render_add_channel(row_index, column_index, channel['id'], column_format))
+
+            rendered_tab += self.render_add_row(row_index, column_format, channels)
+
+        return self.render_add_tab(tab_title, None, rendered_tab)
+
+    def render_add_channel(self, current_row_count, current_column_count, channel_id, column_format):
+        select_id = 'channel-%s-%s-%s' % (current_row_count, current_column_count, channel_id)
+        select_class = 'choose-channel'
+
+        # this is the minimum size a channel can be
+        option_array = column_format.split('-')
+        min_channel_size = int(option_array[current_column_count])
+
+        all_channels = self.db_controller.get_all_channels_values()
+        options = []
+        # loop over options removing any that don't work
+        for channel in all_channels:
+            if int(channel['min-size']) <= min_channel_size:
+                options.append(channel)
+
+        channels = render_template('/snippets/select.html', **locals())
+
+        return render_template('/snippets/add_channel.html', **locals())
+
+    def render_add_tab(self, tab_title, row_id, rendered_tab=None):
+        if not rendered_tab:
+            rendered_tab = self.render_add_row(row_id)
+
+        return render_template('/snippets/add_tab.html', **locals())
+
+    # todo: set chosen_column_format
+    def render_add_row(self, row_number, chosen_column_format=None, row_contents_channels=None):
+        select_class = 'choose-format'
+        select_id = 'columnformat-' + str(row_number)
+        options = self.db_controller.get_column_formats_values()
+        default_select_value = chosen_column_format
+        column_formats = render_template('/snippets/select.html', **locals())
+
+        if not chosen_column_format:
+            chosen_column_format = options[0]
+        row_contents = render_template('/snippets/row_contents.html', **locals())
+
+        return render_template('/snippets/add_row.html', **locals())
+
+    def render_change_format(self, chosen_column_format):
+        return render_template('/snippets/row_contents.html', **locals())

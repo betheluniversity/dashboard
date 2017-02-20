@@ -235,3 +235,11 @@ class DBController(object):
             return False
 
         return True
+
+    def delete_tab(self, id):
+        try:
+            Tab.query.filter(Tab.id == id).delete()
+            self.db_session.commit()
+            return True
+        except:
+            return False

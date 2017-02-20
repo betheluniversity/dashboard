@@ -14,7 +14,7 @@ from app import app
 # 4) DONE - be able to set tab_order (maybe in the side nav, have arrows to move order up or down.
 # 5) DONE - limit channels based on the size of the column
 # 6) Edit a tab
-# 7) Delete a tab
+# 7) DONE - Delete a tab
 
 class DashboardView(FlaskView):
 
@@ -49,10 +49,29 @@ class DashboardView(FlaskView):
         self.base.db_controller.create_new_user()
         return redirect('/', code=302)
 
-    def admin_view(self):
+    # todo: combine the admin_view methods
+    @route('/admin_view/', methods=['GET'])
+    @route('/admin_view/<tab_order>', methods=['GET'])
+    def admin_view(self, tab_order=1):
         tabs = self.base.get_tabs()
         tab_options = self.base.get_tabs(True)
-        # tab_select = render_template('/snippets/select.html', **locals())
+
+        # tab_order = 1
+        title, tab_results = self.base.render_tab(int(tab_order))
+        # Todo: make this populate using the python methods - this is possible. will need to rework most of the other methods
+        if tab_results:
+            rendered_tab = self.base.render_admin_tab(tab_results, title)
+        else:
+            rendered_tab = ''
+
+        return render_template('admin_base.html', **locals())
+
+    @route('/admin_view/<tab_order>', methods=['GET'])
+    def admin_view_order(self, tab_order=1):
+        tabs = self.base.get_tabs()
+        tab_options = self.base.get_tabs(True)
+
+        title, tab_results = self.base.render_tab(tab_order)
 
         return render_template('admin_base.html', **locals())
 
@@ -65,45 +84,26 @@ class DashboardView(FlaskView):
         channel_id = int(request.form['channel_id']) - 1
         column_format = request.form['column_format']
 
-        select_id = 'channel-%s-%s-%s' % (current_row_count, current_column_count, channel_id)
-        select_class = 'choose-channel'
+        return self.base.render_add_channel(current_row_count, current_column_count, channel_id, column_format)
 
-        # this is the minimum size a channel can be
-        option_array = column_format.split('-')
-        min_channel_size = int(option_array[current_column_count])
+    @route('/admin/tool/add-tab', methods=['POST'])
+    def admin_add_tab(self):
+        row_id = request.form['row_id']
 
-        all_channels = self.base.db_controller.get_all_channels_values()
-        options = []
-        # loop over options removing any that don't work
-        for channel in all_channels:
-            channel['min-size']
-            if int(channel['min-size']) <= min_channel_size:
-                options.append(channel)
-
-        channels = render_template('/snippets/select.html', **locals())
-
-        return render_template('/snippets/add_channel.html', **locals())
+        return self.base.render_add_tab('', row_id)
 
     # adds a new format chooser and div
     @route('/admin/tool/add-row', methods=['POST'])
     def admin_add_row(self):
         row_id = request.form['row_id']
-        select_class = 'choose-format'
-        select_id = 'columnformat-' + str(row_id)
-        options = self.base.db_controller.get_column_formats_values()
 
-        column_formats = render_template('/snippets/select.html', **locals())
-        # currently it is initialized to the first in the list
-        chosen_column_format = options[0]
-        row_contents = render_template('/snippets/row_contents.html', **locals())
-
-        return render_template('/snippets/add_row.html', **locals())
+        return self.base.render_add_row(row_id)
 
     # changes the format to the one provided
     @route('/admin/tool/change-format', methods=['POST'])
     def admin_change_format(self):
         chosen_column_format = request.form['selected_option']
-        return render_template('/snippets/row_contents.html', **locals())
+        return self.base.render_change_format(chosen_column_format)
 
     # changes the format to the one provided
     @route('/admin/submit-tab', methods=['POST'])
@@ -120,3 +120,11 @@ class DashboardView(FlaskView):
         new_nav_array = json.loads(rform['nav_order'])
 
         return str(self.base.db_controller.update_tab_order(new_nav_array))
+
+    # changes the format to the one provided
+    @route('/admin/delete-tab', methods=['POST'])
+    def admin_delete_tab(self):
+        rform = request.form
+        tab_id = rform['tab_id']
+
+        return str(self.base.db_controller.delete_tab(tab_id))

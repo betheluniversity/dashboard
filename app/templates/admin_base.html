@@ -9,8 +9,9 @@
             <ul class="nav nav-sidebar">
                 {% for tab in tab_options %}
                     <li>
-                        <a>{{ tab.label }}</a>
+                        <a href="{{ url_for( 'DashboardView:admin_view_order', tab_order=tab['order']) }}" >{{ tab.label }}</a>
                         <div class="admin-nav-div">
+                            <a href="#" class="delete-tab" data-tab-id="{{ tab.value }}">x</a>
                             <a href="#" class="up-arrow">&uarr;</a>
                             <a href="#" class="down-arrow">&darr;</a>
                             <input type="text" class="new-nav-item" hidden="hidden" value="{{ tab.value }}" />
@@ -28,11 +29,11 @@
     <input type='button' class="add-tab btn btn-outline-primary" value="+ New Tab" />
     <hr/>
     <form action="{{ url_for( 'DashboardView:admin_submit_tab') }}" method="POST">
-
-        <div id="form-data"></div>
+        <div id="form-data">{{ rendered_tab|safe }}</div>
         <hr>
         <input class='btn btn-primary' type="submit" />
     </form>
+
 
 {% endblock %}
 
@@ -59,17 +60,12 @@
             var form_data_element = $('#form-data');
             form_data_element.html('');
 
-            var url = "{{ url_for( 'DashboardView:admin_add_row') }}";
+            var url = "{{ url_for( 'DashboardView:admin_add_tab') }}";
 
             var new_row_count = $('.admin-row-contents').length + 1;
             var post_data = {'row_id': new_row_count};
             $.post(url, post_data, function (data) {
-                // Todo: update these to be in a jinja template . . .
-                form_data_element.append($('<label>').html('Tab name: '));
-                form_data_element.append($('<input>').attr({ type: 'text', name: 'tab-name' }));
                 form_data_element.append(data);
-                form_data_element.append($('<input>').attr({ type: 'button', class:'add-row btn btn-outline-primary', value:'+ Add Row'}));
-                form_data_element.append($('<input>').attr({ type: 'button', class:'remove-row btn btn-outline-danger', value:'- Remove Row'}));
             });
         });
 
@@ -114,10 +110,10 @@
 
         $(document).on('click', '.down-arrow', function() {
             var current_element = $(this);
-            if( $(this))
             current_element.closest('li').next().insertBefore(current_element.closest('li'));
         });
 
+        // Todo: make sure to know whether its a new or edited one
         $(document).on('click', '.submit-nav', function() {
             var order = 1;
             var return_array = [];
@@ -135,7 +131,19 @@
                     alert('There was an issue with changing the navigation order.');
                 }
             });
-        })
+        });
+
+        $(document).on('click', '.delete-tab', function() {
+            var current_element = $(this);
+            var tab_id = current_element.data("tab-id");
+
+            var url = "{{ url_for( 'DashboardView:admin_delete_tab') }}";
+            var post_data = { 'tab_id': tab_id};
+
+            $.post(url, post_data, function (data) {
+                current_element.closest('li').remove();
+            });
+        });
 
     </script>
 {% endblock %}
