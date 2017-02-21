@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin{% endblock %}
+{% block main_content_title %}Admin{% endblock %}
+
+{% block side_nav_block %}
+    <div class="col-sm-3 col-md-2 sidebar">
+        <form>
+            <ul class="nav nav-sidebar">
+                {% for tab in tab_options %}
+                    <li>
+                        {# Can't use url_for, as it doesn't work with multiple routes with default params #}
+                        <a href="/admin_view/{{tab.order}}" >{{ tab.label }}</a>
+                        <div class="admin-nav-div">
+                            <a href="" class="delete-tab igonre-pound-on-link" data-tab-id="{{ tab.value }}" onclick="return false" data-toggle="modal" data-target="#delete-modal">x</a>
+                            <a href="" class="up-arrow igonre-pound-on-link" onclick="return false">&uarr;</a>
+                            <a href="" class="down-arrow igonre-pound-on-link" onclick="return false">&darr;</a>
+                            <input type="text" class="new-nav-item" hidden="hidden" value="{{ tab.value }}" />
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </form>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+    <input type='button' class="new-tab btn btn-outline-primary" value="+ New Tab" />
+    <hr/>
+    <form action="{{ url_for( 'DashboardView:admin_submit_tab') }}" method="POST">
+        <div id="form-data">{{ rendered_tab|safe }}</div>
+        <hr>
+        <input class='btn btn-primary' type="submit" />
+    </form>
+
+      <!-- Modal -->
+      <div class="modal fade" id="delete-modal" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Delete</h4>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this tab?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-default btn-danger modal-confirm" id='delete-tab-post' data-dismiss="modal">Delete</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).on('click', '.add-row', function(){
+            var current_element = $(this);
+            var url = "{{ url_for( 'DashboardView:admin_add_row') }}";
+            var new_row_count = $('.admin-row-contents').length + 1;
+
+            var post_data = {'row_id': new_row_count};
+            $.post(url, post_data, function (data) {
+                current_element.before(data);
+            });
+        });
+
+        $(document).on('click', '.remove-row', function(){
+            var current_element = $(this);
+            current_element.siblings('.channel-row').last().remove();
+        });
+
+        $(document).on('click', '.new-tab', function(){
+            var form_data_element = $('#form-data');
+            form_data_element.html('');
+
+            var url = "{{ url_for( 'DashboardView:admin_new_tab') }}";
+
+            var new_row_count = $('.admin-row-contents').length + 1;
+            var post_data = {'row_id': new_row_count};
+            $.post(url, post_data, function (data) {
+                form_data_element.append(data);
+            });
+        });
+
+        $(document).on('click', '.add-channel', function(){
+            var current_element = $(this);
+            var url = "{{ url_for( 'DashboardView:admin_add_channel') }}";
+            var new_channel_count = current_element.siblings('.admin-channel').length + 1;
+            var current_row_count = current_element.closest('.admin-row-contents').data('row-counter');
+            var current_column_count = current_element.closest('.admin-column-contents').data('column-counter');
+
+            var column_format = current_element.closest('.channel-row').find('.choose-format').val();
+
+            var post_data = {'new_channel_count': new_channel_count, 'current_row_count': current_row_count, 'current_column_count': current_column_count, 'column_format': column_format};
+            $.post(url, post_data, function (data) {
+                current_element.before(data);
+            });
+        });
+
+        $(document).on('click', '.remove-channel', function(){
+            var current_element = $(this);
+
+            var current_row_count = current_element.closest('.admin-row-contents').data('row-counter');
+            var current_column_count = current_element.closest('.admin-column-contents').data('column-counter');
+
+            current_element.siblings('.admin-channel').last().remove();
+        });
+
+        $(document).on('change', '.choose-format', function() {
+            var current_element = $(this);
+            var url = "{{ url_for( 'DashboardView:admin_change_format') }}";
+            var post_data = { 'selected_option': current_element.val()};
+
+            $.post(url, post_data, function (data) {
+                current_element.parent().parent().children('.admin-row-contents').html(data);
+            });
+        });
+
+        $(document).on('click', '.up-arrow', function() {
+            var current_element = $(this);
+            current_element.closest('li').prev().insertAfter(current_element.closest('li'))
+            submit_nav();
+        });
+
+        $(document).on('click', '.down-arrow', function() {
+            var current_element = $(this);
+            current_element.closest('li').next().insertBefore(current_element.closest('li'));
+            submit_nav();
+        });
+
+        function submit_nav() {
+            var order = 1;
+            var return_array = [];
+            $('.new-nav-item').each(function( index ) {
+                element = $('.new-nav-item').get(index);
+                return_array.push({'id': element.value, 'order': order});
+                order++;
+            });
+
+            var url = "{{ url_for( 'DashboardView:admin_submit_nav') }}";
+            var post_data = { 'nav_order': JSON.stringify(return_array) };
+
+            $.post(url, post_data, function (data) {
+                if( data == 'False') {
+                    alert('There was an issue with changing the navigation order.');
+                }
+            });
+        }
+
+        $(document).on('click', '.delete-tab', function() {
+            var current_element = $(this);
+            var tab_id = current_element.data("tab-id");
+
+            $("#delete-tab-post").attr("data-tab-id", tab_id);
+        });
+
+        $(document).on('click', '#delete-tab-post', function() {
+            var tab_id = $(this).data("tab-id");
+            var current_element = $('a[data-tab-id=' + tab_id + ']');
+
+            var url = "{{ url_for( 'DashboardView:admin_delete_tab') }}";
+            var post_data = { 'tab_id': tab_id};
+
+            $.post(url, post_data, function (data) {
+                current_element.closest('li').remove();
+            });
+        });
+    </script>
+{% endblock %}

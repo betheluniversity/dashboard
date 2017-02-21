@@ -1,0 +1,13 @@
+{% set loop_counter = 0 %}
+{% for row_width in chosen_column_format.split('-') %}
+    <div class="col-sm-{{ row_width }} admin-column-contents" data-column-counter="{{ loop.index }}">
+        {% if row_contents_channels %}
+            {% for channel in row_contents_channels[loop_counter] %}
+                {{ channel|safe }}
+            {% endfor %}
+        {% endif %}
+        <input type="button" class="add-channel btn btn-outline-primary" value="+ New Channel" name="columnformat-{{ chosen_column_format }}" />
+        <input type="button" class="remove-channel btn btn-outline-danger" value="- Remove Channel" />
+    </div>
+    {% set loop_counter = loop_counter + 1 %}
+{% endfor %}

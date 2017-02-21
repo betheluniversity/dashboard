@@ -1,0 +1,9 @@
+<select id="{{ select_id }}" name="{{ select_id }}" class="{{ select_class }}">
+    {% for option in options %}
+        {% if option.value and option.label %}
+            <option value="{{ option.value }}" {% if default_select_value == option.value %}selected{% endif %}>{{ option.label }}</option>
+        {% else %}
+            <option {% if default_select_value == option %}selected{% endif %}>{{ option }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

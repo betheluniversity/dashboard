@@ -1,18 +1,53 @@
+{% import 'side_nav.html' as side_nav %}
+{% import 'top_nav.html' as top_nav %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css"
-          integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
 
+    <title>Dashboard | {% block title %}{% endblock %}</title>
 
-test base.html {{ uri }}
+    <!-- Bootstrap core CSS -->
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet">
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js"
-            integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous">
-</script>
-</body>
+    <!-- Custom styles for this template -->
+    <link href="/static/assets/css/dashboard.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="static/assets/js/vendor/jquery.min.js"><\/script>')</script>
+  </head>
+
+  <body>
+
+    {{ top_nav.render() }}
+
+    <div class="container-fluid">
+      <div class="row">
+            {% block side_nav_block %}{{ side_nav.render(tabs) }}{% endblock %}
+
+            {# todo: update the classes on this div. These came with the preset stuff #}
+            <div class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 main">
+                <h1>{% block main_content_title %}{% endblock %}</h1>
+                <hr />
+
+                {% block main_content %}
+                {% endblock %}
+            </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
+    <script src="/static/assets/js/bootstrap.min.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

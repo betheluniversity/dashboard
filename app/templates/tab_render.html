@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block main_content_title %}{{ title }}{% endblock %}
+
+{% block main_content %}
+    {# For each row #}
+    {% set row_counter = 0 %}
+    {% for tab_row, tab_value in tab_results.iteritems() %}
+        <div class="row">
+            {% set column_formats = tab_value.format.split('-') %}
+            {% set column_counter = 0 %}
+
+            {# For each Column #}
+            {% for col_key, col_value in tab_value.columns.iteritems() %}
+                <div class="col-md-{{ column_formats[column_counter] }}">
+                    {% set channel_counter = 0 %}
+
+                    {# For each Channel in a column #}
+                    {% for channel_key, channel_value in col_value.iteritems() %}
+                        <div id="{{ channel_value.channel_class_name|lower }}{{ row_counter }}{{ column_counter }}{{ channel_counter }}" class="channel">
+                            <h5>{{ channel_value.name }}</h5>
+                            <div>{{ channel_value.html | safe }}</div>
+                        </div>
+                        {% set channel_counter = channel_counter + 1 %}
+                    {% endfor %}
+
+                </div>
+                {% set column_counter = column_counter + 1 %}
+            {% endfor %}
+
+        </div>
+        {% set row_counter = row_counter + 1 %}
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        // http://stackoverflow.com/questions/3552944/how-to-get-the-anchor-from-the-url-using-jquery
+        var url = window.location.hash, idx = url.indexOf("#");
+        var hash = idx != -1 ? url.substring(idx+1) : "";
+        if( hash != ''){
+            $('#' + hash).addClass('selected-channel');
+            $('html, body').animate({
+                scrollTop: $("#" + hash).offset().top - 100
+            }, 2000);
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{# This should remain on a single line, otherwise the spacing creates issues #}
+{% macro replace_and_lower(string) %}{{ string|lower|replace(' ', '-')|replace('_', '-') }}{% endmacro %}
+
+{% macro render(tabs) %}
+
+    <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+        {% for tab in tabs %}
+            {% if (request.path == '/' and loop.index == 1) or '/tab/' + replace_and_lower(tab) == replace_and_lower(request.path) %}
+                {% set active_class = 'active' %}
+            {% else %}
+                {% set active_class = '' %}
+            {% endif %}
+            <li class="{{ active_class }}"><a href="/tab/{{ replace_and_lower(tab) }}">{{ tab }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+{% endmacro %}
