@@ -127,3 +127,7 @@ body {
 .admin-nav-div, .submit-nav {
   float:right;
 }
+
+a.igonre-pound-on-link {
+    color: inherit;
+}

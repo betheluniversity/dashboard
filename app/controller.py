@@ -176,15 +176,14 @@ class DashboardController(object):
                 for channel_index, channel in column.iteritems():
                     if column_index not in channels:
                         channels.append([])
-                    # channels[column_index].append(channel['html'])
-                    channels[column_index].append(self.render_add_channel(row_index, column_index, channel['id'], column_format))
+                    channels[column_index].append(self.render_add_channel(row_index, column_index, channel_index, column_format, channel['id']))
 
             rendered_tab += self.render_add_row(row_index, column_format, channels)
 
         return self.render_add_tab(tab_title, None, rendered_tab)
 
-    def render_add_channel(self, current_row_count, current_column_count, channel_id, column_format):
-        select_id = 'channel-%s-%s-%s' % (current_row_count, current_column_count, channel_id)
+    def render_add_channel(self, current_row_count, current_column_count, channel_count, column_format, default_select_value=''):
+        select_id = 'channel-%s-%s-%s' % (current_row_count, current_column_count, channel_count)
         select_class = 'choose-channel'
 
         # this is the minimum size a channel can be
@@ -209,9 +208,9 @@ class DashboardController(object):
         return render_template('/snippets/add_tab.html', **locals())
 
     # todo: set chosen_column_format
-    def render_add_row(self, row_number, chosen_column_format=None, row_contents_channels=None):
+    def render_add_row(self, row_id, chosen_column_format=None, row_contents_channels=None):
         select_class = 'choose-format'
-        select_id = 'columnformat-' + str(row_number)
+        select_id = 'columnformat-' + str(row_id)
         options = self.db_controller.get_column_formats_values()
         default_select_value = chosen_column_format
         column_formats = render_template('/snippets/select.html', **locals())

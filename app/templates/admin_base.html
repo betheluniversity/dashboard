@@ -11,9 +11,9 @@
                     <li>
                         <a href="{{ url_for( 'DashboardView:admin_view_order', tab_order=tab['order']) }}" >{{ tab.label }}</a>
                         <div class="admin-nav-div">
-                            <a href="#" class="delete-tab" data-tab-id="{{ tab.value }}">x</a>
-                            <a href="#" class="up-arrow">&uarr;</a>
-                            <a href="#" class="down-arrow">&darr;</a>
+                            <a href="" class="delete-tab igonre-pound-on-link" data-tab-id="{{ tab.value }}" onclick="return false">x</a>
+                            <a href="" class="up-arrow igonre-pound-on-link" onclick="return false">&uarr;</a>
+                            <a href="" class="down-arrow igonre-pound-on-link" onclick="return false">&darr;</a>
                             <input type="text" class="new-nav-item" hidden="hidden" value="{{ tab.value }}" />
                         </div>
                     </li>
@@ -78,7 +78,7 @@
 
             var column_format = current_element.closest('.channel-row').find('.choose-format').val();
 
-            var post_data = {'channel_id': new_channel_count, 'current_row_count': current_row_count, 'current_column_count': current_column_count, 'column_format': column_format};
+            var post_data = {'new_channel_count': new_channel_count, 'current_row_count': current_row_count, 'current_column_count': current_column_count, 'column_format': column_format};
             $.post(url, post_data, function (data) {
                 current_element.before(data);
             });
@@ -144,6 +144,5 @@
                 current_element.closest('li').remove();
             });
         });
-
     </script>
 {% endblock %}

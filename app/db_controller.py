@@ -128,7 +128,7 @@ class DBController(object):
             self.db_session.commit()
 
             # create row3
-            row3 = Row(new_tab2.id, 3, 3)
+            row3 = Row(new_tab2.id, 1, 3)
             self.db_session.add(row3)
             self.db_session.commit()
 
@@ -143,6 +143,7 @@ class DBController(object):
             # user exists, so exit
             return False
 
+    # creates roles/column-formats/channels
     def init_db(self):
         # Todo: make this check more accurate? Maybe check if things exist individually
         if Role.query.filter(Role.name=='ROLE_ADMIN').first() is None:
@@ -202,6 +203,7 @@ class DBController(object):
                     new_col_format = rform['columnformat-' + str(new_row)]
                     new_col_format_id = ColumnFormat.query.filter(ColumnFormat.format == new_col_format).first().id
 
+                    # todo: row order is not being set properly :(
                     # check if row already exists, if not, create a new row.
                     row = Row.query.filter(Row.tab_id == tab.id)\
                         .filter(Row.order == new_row).first()
@@ -238,7 +240,17 @@ class DBController(object):
 
     def delete_tab(self, id):
         try:
-            Tab.query.filter(Tab.id == id).delete()
+            items_to_delete = self.db_session.query(Tab, Row, Column) \
+                .join(Row) \
+                .join(Column) \
+                .filter(Tab.id == id) \
+                .all()
+
+            for item in items_to_delete:
+                self.db_session.delete(item.Tab)
+                self.db_session.delete(item.Row)
+                self.db_session.delete(item.Column)
+
             self.db_session.commit()
             return True
         except:
