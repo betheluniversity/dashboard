@@ -111,7 +111,6 @@ class DashboardController(object):
         # init_user_session()
         # self.db_controller.create_new_user()
 
-    # todo: tab_order should become tab_id?
     def render_tab(self, tab_order_or_tab_name):
         user = User.query.filter(User.username == session['username']).first()
 
@@ -207,7 +206,6 @@ class DashboardController(object):
 
         return render_template('/snippets/add_tab.html', **locals())
 
-    # todo: set chosen_column_format
     def render_add_row(self, row_id, chosen_column_format=None, row_contents_channels=None):
         select_class = 'choose-format'
         select_id = 'columnformat-' + str(row_id)

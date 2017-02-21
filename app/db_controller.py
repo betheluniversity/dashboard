@@ -181,7 +181,6 @@ class DBController(object):
         else:
             tab_name = rform['tab-name']
 
-        # todo: set order properly, which probably means editing the others
         all_users_tabs = Tab.query.filter(Tab.user_id == user.id).all()
 
         tab = Tab(user_id=user.id, name=tab_name, order=len(all_users_tabs)+1)
@@ -203,7 +202,6 @@ class DBController(object):
                     new_col_format = rform['columnformat-' + str(new_row)]
                     new_col_format_id = ColumnFormat.query.filter(ColumnFormat.format == new_col_format).first().id
 
-                    # todo: row order is not being set properly :(
                     # check if row already exists, if not, create a new row.
                     row = Row.query.filter(Row.tab_id == tab.id)\
                         .filter(Row.order == new_row).first()

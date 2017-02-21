@@ -4,17 +4,8 @@ from flask.ext.classy import FlaskView, route
 from flask import render_template, request, redirect
 
 from app.controller import DashboardController
-
 from app import app
 
-# Overall Todos:
-# 1) DONE - add number indexing to each row/column/channel. We need to use the 'name' attr to pass the fields along
-# 2) DONE - use those numbers to create a tab in the DB
-# 3) DONE - delete channels/rows
-# 4) DONE - be able to set tab_order (maybe in the side nav, have arrows to move order up or down.
-# 5) DONE - limit channels based on the size of the column
-# 6) Edit a tab
-# 7) DONE - Delete a tab
 
 class DashboardView(FlaskView):
 
@@ -49,7 +40,6 @@ class DashboardView(FlaskView):
         self.base.db_controller.create_new_user()
         return redirect('/', code=302)
 
-    # todo: combine the admin_view methods
     @route('/admin_view/', methods=['GET'])
     @route('/admin_view/<tab_order>', methods=['GET'])
     def admin_view(self, tab_order=1):
@@ -57,20 +47,10 @@ class DashboardView(FlaskView):
         tab_options = self.base.get_tabs(True)
 
         title, tab_results = self.base.render_tab(int(tab_order))
-        # Todo: make this populate using the python methods - this is possible. will need to rework most of the other methods
         if tab_results:
             rendered_tab = self.base.render_admin_tab(tab_results, title)
         else:
             rendered_tab = ''
-
-        return render_template('admin_base.html', **locals())
-
-    @route('/admin_view/<tab_order>', methods=['GET'])
-    def admin_view_order(self, tab_order=1):
-        tabs = self.base.get_tabs()
-        tab_options = self.base.get_tabs(True)
-
-        title, tab_results = self.base.render_tab(tab_order)
 
         return render_template('admin_base.html', **locals())
 
@@ -85,8 +65,8 @@ class DashboardView(FlaskView):
 
         return self.base.render_add_channel(current_row_count, current_column_count, new_channel_count, column_format)
 
-    @route('/admin/tool/add-tab', methods=['POST'])
-    def admin_add_tab(self):
+    @route('/admin/tool/new-tab', methods=['POST'])
+    def admin_new_tab(self):
         row_id = request.form['row_id']
 
         return self.base.render_add_tab('', row_id)
@@ -109,7 +89,7 @@ class DashboardView(FlaskView):
     def admin_submit_tab(self):
         rform = request.form
         return_url = "/admin_view/"
-        # todo: this tab_id is not properly set, if it is just using the url...
+
         if 'tab_id' in rform and rform['tab_id']:
             self.base.db_controller.delete_tab(rform['tab_id'])
             return_url += rform['tab_id']
@@ -124,7 +104,7 @@ class DashboardView(FlaskView):
 
         return str(self.base.db_controller.update_tab_order(new_nav_array))
 
-    # todo: this doesn't work?
+    # todo: need to add a confirmation message
     # changes the format to the one provided
     @route('/admin/delete-tab', methods=['POST'])
     def admin_delete_tab(self):
