@@ -20,8 +20,6 @@
                     </li>
                 {% endfor %}
             </ul>
-            <hr />
-            <input class="submit-nav btn btn-primary" value="Submit Nav Order" />
         </form>
     </div>
 {% endblock %}
@@ -126,14 +124,16 @@
         $(document).on('click', '.up-arrow', function() {
             var current_element = $(this);
             current_element.closest('li').prev().insertAfter(current_element.closest('li'))
+            submit_nav();
         });
 
         $(document).on('click', '.down-arrow', function() {
             var current_element = $(this);
             current_element.closest('li').next().insertBefore(current_element.closest('li'));
+            submit_nav();
         });
 
-        $(document).on('click', '.submit-nav', function() {
+        function submit_nav() {
             var order = 1;
             var return_array = [];
             $('.new-nav-item').each(function( index ) {
@@ -150,7 +150,7 @@
                     alert('There was an issue with changing the navigation order.');
                 }
             });
-        });
+        }
 
         $(document).on('click', '.delete-tab', function() {
             var current_element = $(this);
