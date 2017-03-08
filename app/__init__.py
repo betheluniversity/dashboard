@@ -9,7 +9,7 @@ from flask_admin.contrib.sqla import ModelView
 _basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 
-app.config.from_object(os.environ['dashboard_config'])
+app.config.from_object(os.environ['config'])
 db = SQLAlchemy(app)
 
 # These 2 lines are helpful for creating the initial db

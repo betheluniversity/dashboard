@@ -9,6 +9,7 @@ Flask-Classy
 Flask-SQLAlchemy
 cx_oracle
 flask-migrate
+flask_admin
 
 requests
 bu-cascade
