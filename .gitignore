@@ -4,5 +4,4 @@ migrations/
 *.pyc
 
 params.env
-config.py
 test.db
