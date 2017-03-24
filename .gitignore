@@ -5,3 +5,4 @@ migrations/
 
 params.env
 test.db
+app/test.db
