@@ -13,6 +13,6 @@ import os
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, path)
 
-load_dotenv('params.env')
+load_dotenv('/opt/dashboard/dashboard/params.env')
 
-import app as application
+from app import app as application

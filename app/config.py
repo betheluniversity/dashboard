@@ -6,7 +6,7 @@ envs = os.environ
 class Config(object):
     DEBUG = False  # should debug mode be on?
     TESTING = False  # are unit tests running?
-    SQLALCHEMY_DATABASE_URI = envs.get('SQLALCHEMY_DATABASE_URI') + os.path.join(_basedir, 'app/test.db')
+    SQLALCHEMY_DATABASE_URI = envs.get('SQLALCHEMY_DATABASE_URI') + os.path.join(_basedir, 'test.db')
     DB_KEY = envs.get('DB_KEY')
     CONSTR = envs.get('TEST_CONSTR')
     # SQLALCHEMY_DATABASE_URI = CONSTR % DB_KEY
