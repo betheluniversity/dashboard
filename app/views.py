@@ -37,7 +37,7 @@ class DashboardView(FlaskView):
     def clear_db(self):
         self.base.db_controller.clear_db_generated_content()
         self.base.db_controller.init_db()
-        self.base.db_controller.create_new_user()
+        self.base.db_controller.create_new_user_if_new()
         return redirect('/', code=302)
 
     @route('/admin_view/', methods=['GET'])

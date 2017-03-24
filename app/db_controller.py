@@ -66,7 +66,7 @@ class DBController(object):
 
         return True
 
-    def create_new_user(self):
+    def create_new_user_if_new(self):
         user = User.query.filter(User.username == session['username']).first()
 
         # if user does not exist, then . . .

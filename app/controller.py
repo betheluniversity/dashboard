@@ -108,8 +108,8 @@ class DashboardController(object):
 
         # self.db_controller.clear_db_generated_content()
         # self.db_controller.init_db()
-        # init_user_session()
-        # self.db_controller.create_new_user()
+        init_user_session()
+        self.db_controller.create_new_user_if_new()
 
     def render_tab(self, tab_order_or_tab_name):
         user = User.query.filter(User.username == session['username']).first()
